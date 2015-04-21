@@ -8,3 +8,4 @@
  */
 
 require_once( "class-vip-support-role.php" );
+require_once( "class-vip-support-user.php" );
