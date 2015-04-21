@@ -7,4 +7,4 @@
  * License:      GPLv2 or later
  */
 
-require_once( "class-vip-role.php" );
+require_once( "class-vip-support-role.php" );

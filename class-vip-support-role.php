@@ -1,11 +1,12 @@
 <?php
 
 /**
+ * @TODO: Verify the A12n's email
+ * @TODO: If an A12n is registered, add them to the role automattically
  *
- *
- * @package VipRole
+ * @package VipSupportRole
  **/
-class VipRole {
+class VipSupportRole {
 
 	const VIP_SUPPORT_ROLE      = 'vip_support';
 	const MSG_BLOCKED_UPGRADE   = 'vip_blocked_upgrade';
@@ -20,13 +21,13 @@ class VipRole {
 	 *
 	 * @access @static
 	 *
-	 * @return VipRole object The instance of VipRole
+	 * @return VipSupportRole object The instance of VipRole
 	 */
 	static public function init() {
 		static $instance = false;
 
 		if ( ! $instance ) {
-			$instance = new VipRole;
+			$instance = new VipSupportRole;
 		}
 
 		return $instance;
@@ -164,7 +165,7 @@ class VipRole {
 	 *
 	 */
 	protected function update() {
-		$option_name = 'viprole_version';
+		$option_name = 'vipsupportrole_version';
 		$version = get_option( $option_name, 0 );
 
 		if ( $version == $this->version ) {
@@ -187,4 +188,4 @@ class VipRole {
 
 // Initiate the singleton
 
-VipRole::init();
+VipSupportRole::init();
