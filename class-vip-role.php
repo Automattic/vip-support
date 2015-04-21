@@ -39,6 +39,7 @@ class VipRole {
 	 */
 	public function __construct() {
 		add_action( 'admin_init',      array( $this, 'action_admin_init' ) );
+		add_action( 'admin_notices',   array( $this, 'action_admin_notices' ) );
 		add_action( 'set_user_role',   array( $this, 'action_set_user_role' ), 10, 3 );
 
 		add_filter( 'wp_redirect',     array( $this, 'filter_wp_redirect' ) );
@@ -53,6 +54,28 @@ class VipRole {
 
 	public function action_admin_init() {
 		$this->update();
+	}
+
+	public function action_admin_notices() {
+		if ( 'users' != get_current_screen()->id ) {
+			return;
+		}
+		if ( isset( $_GET['update'] ) ) {
+			$update = $_GET['update'];
+		} else {
+			return;
+		}
+		switch ( $update ) {
+			case self::MSG_BLOCKED_UPGRADE:
+				$message = __('Only Automattic staff can be assigned the VIP Support role.', 'vip-support');
+				break;
+			case self::MSG_BLOCKED_DOWNGRADE:
+				$message = __('VIP Support users can only be assigned the VIP Support role, or deleted.', 'vip-support');
+				break;
+			default:
+				return;
+		}
+		echo '<div id="message" class="error"><p>' . $message . '</p></div>';
 	}
 
 	public function action_set_user_role( $user_id, $role, $old_roles ) {
