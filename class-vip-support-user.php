@@ -1,19 +1,25 @@
 <?php
 
 /**
- * @TODO: Verify the A12n's email
+ * @TODO: Verify the A12n's email on registration
+ * @TODO: Verify the A12n's email when it changes, even if previous email was not A8c
+ * @TODO: Block logging in until the user has verified their email address
  *
  * @package VipSupportUser
  **/
 class VipSupportUser {
 
-	const MSG_BLOCKED_UPGRADE   = 'vip_blocked_upgrade';
-	const MSG_BLOCKED_DOWNGRADE = 'vip_blocked_downgrade';
-	const MSG_MADE_VIP          = 'vip_made_vip';
+	const MSG_BLOCKED_UPGRADE          = 'vip_blocked_upgrade';
+	const MSG_BLOCKED_NEW_NON_VIP_USER = 'vip_blocked_new_non_vip_user';
+	const MSG_BLOCKED_DOWNGRADE        = 'vip_blocked_downgrade';
+	const MSG_MADE_VIP                 = 'vip_made_vip';
+
+	const META_VERIFICATION_CODE = 'vip_email_verification_code';
 
 	protected $reverting_role;
 
 	protected $message_replace;
+	protected $registering_user;
 	protected $registering_vip;
 
 	/**
@@ -48,6 +54,7 @@ class VipSupportUser {
 		$this->reverting_role   = false;
 		$this->message_replace  = false;
 		$this->registering_vip  = false;
+		$this->registering_user = false;
 	}
 
 	// HOOKS
@@ -67,6 +74,9 @@ class VipSupportUser {
 		switch ( $update ) {
 			case self::MSG_BLOCKED_UPGRADE :
 				$error = __('Only Automattic staff can be assigned the VIP Support role.', 'vip-support');
+				break;
+			case self::MSG_BLOCKED_NEW_NON_VIP_USER :
+				$error = __('Only Automattic staff can be assigned the VIP Support role, the new user has been made a "subscriber".', 'vip-support');
 				break;
 			case self::MSG_BLOCKED_DOWNGRADE :
 				$error = __('VIP Support users can only be assigned the VIP Support role, or deleted.', 'vip-support');
@@ -137,6 +147,12 @@ class VipSupportUser {
 		if ( $this->is_a8c_email( $user->user_email ) ) {
 			$user->set_role( VipSupportRole::VIP_SUPPORT_ROLE );
 			$this->registering_vip = true;
+			update_user_meta( $user_id, 'vip_verified_email', false );
+			$this->send_verification_email( $user_id );
+		} else {
+			if ( self::MSG_BLOCKED_UPGRADE == $this->message_replace ) {
+				$this->message_replace = self::MSG_BLOCKED_NEW_NON_VIP_USER;
+			}
 		}
 	}
 
@@ -146,7 +162,31 @@ class VipSupportUser {
 	// UTILITIES
 	// =========
 
+	protected function send_verification_email( $user_id ) {
+		// @FIXME: Should the verification code expire?
+		$verification_code = get_user_meta( $user_id, self::META_VERIFICATION_CODE, true );
+		if ( ! $verification_code ) {
+			$verification_code = uniqid();
+			update_user_meta( $user_id, self::META_VERIFICATION_CODE, $verification_code );
+		}
+		$verification_link = add_query_arg( array( 'vip_verification' => $verification_code ), home_url() );
+		$user = new WP_User( $user_id );
 
+		$message  = __( 'Dear VIP Support User,', 'vip-support' );
+		$message .= PHP_EOL . PHP_EOL;
+		$message .= sprintf( __( 'Somebody has added you as a support user on %1$s (%2$s). If you are expecting this, please click the link below to verify your email address:', 'vip-support' ), get_bloginfo( 'name' ), home_url() );
+		$message .= PHP_EOL;
+		$message .= $verification_link;
+		$message .= PHP_EOL . PHP_EOL;
+		$message .= __( 'If you have any questions, please contact the WordPress.com VIP Support Team.' );
+
+		$subject = sprintf( __( 'Email verification for %s', 'vip-support' ), get_bloginfo( 'name' ) );
+
+		error_log( "Subject: $subject" );
+		error_log( "Message: $message" );
+
+		wp_mail( $user->user_email, $subject, $message );
+	}
 
 	/**
 	 *
