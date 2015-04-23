@@ -2,7 +2,6 @@
 
 /**
  * @TODO: Verify the A12n's email
- * @TODO: If an A12n is registered, add them to the role automattically
  *
  * @package VipSupportUser
  **/
@@ -10,10 +9,12 @@ class VipSupportUser {
 
 	const MSG_BLOCKED_UPGRADE   = 'vip_blocked_upgrade';
 	const MSG_BLOCKED_DOWNGRADE = 'vip_blocked_downgrade';
+	const MSG_MADE_VIP          = 'vip_made_vip';
 
 	protected $reverting_role;
 
 	protected $message_replace;
+	protected $registering_vip;
 
 	/**
 	 * Singleton stuff.
@@ -40,18 +41,20 @@ class VipSupportUser {
 	public function __construct() {
 		add_action( 'admin_notices',   array( $this, 'action_admin_notices' ) );
 		add_action( 'set_user_role',   array( $this, 'action_set_user_role' ), 10, 3 );
+		add_action( 'user_register',   array( $this, 'action_user_register' ) );
 
 		add_filter( 'wp_redirect',     array( $this, 'filter_wp_redirect' ) );
 
-		$this->reverting_role  = false;
-		$this->message_replace = false;
+		$this->reverting_role   = false;
+		$this->message_replace  = false;
+		$this->registering_vip  = false;
 	}
 
 	// HOOKS
 	// =====
 
 	public function action_admin_notices() {
-		if ( 'users' != get_current_screen()->id ) {
+		if ( 'users' != get_current_screen()->base ) {
 			return;
 		}
 		if ( isset( $_GET['update'] ) ) {
@@ -59,17 +62,29 @@ class VipSupportUser {
 		} else {
 			return;
 		}
+		$error = false;
+		$message = false;
 		switch ( $update ) {
-			case self::MSG_BLOCKED_UPGRADE:
-				$message = __('Only Automattic staff can be assigned the VIP Support role.', 'vip-support');
+			case self::MSG_BLOCKED_UPGRADE :
+				$error = __('Only Automattic staff can be assigned the VIP Support role.', 'vip-support');
 				break;
-			case self::MSG_BLOCKED_DOWNGRADE:
-				$message = __('VIP Support users can only be assigned the VIP Support role, or deleted.', 'vip-support');
+			case self::MSG_BLOCKED_DOWNGRADE :
+				$error = __('VIP Support users can only be assigned the VIP Support role, or deleted.', 'vip-support');
+				break;
+			case self::MSG_MADE_VIP :
+				$message = __('This user was given the VIP Support role, based on their email address.', 'vip-support');
 				break;
 			default:
 				return;
 		}
-		echo '<div id="message" class="error"><p>' . $message . '</p></div>';
+		if ( $error ) {
+			echo '<div id="message" class="notice is-dismissible error"><p>' . $error . '</p></div>';
+
+		}
+		if ( $message ) {
+			echo '<div id="message" class="notice is-dismissible updated"><p>' . $message . '</p></div>';
+
+		}
 	}
 
 	public function action_set_user_role( $user_id, $role, $old_roles ) {
@@ -102,14 +117,27 @@ class VipSupportUser {
 	}
 
 	public function filter_wp_redirect( $location ) {
-		if ( ! $this->message_replace ) {
+		if ( ! $this->message_replace && ! $this->registering_vip ) {
 			return $location;
 		}
-		if ( false === stristr( $location, 'users.php' ) ) {
-			return $location;
+		if ( $this->message_replace ) {
+			$location = add_query_arg( array( 'update' => $this->message_replace ), $location );
+			$location = esc_url_raw( $location );
 		}
-		$location = add_query_arg( array( 'update' => $this->message_replace ), $location );
-		return esc_url_raw( $location );
+		if ( $this->registering_vip ) {
+			$location = add_query_arg( array( 'update' => self::MSG_MADE_VIP ), $location );
+			$location = esc_url_raw( $location );
+		}
+		return $location;
+	}
+
+	public function action_user_register( $user_id ) {
+		$this->registering_user = true;
+		$user = new WP_User( $user_id );
+		if ( $this->is_a8c_email( $user->user_email ) ) {
+			$user->set_role( VipSupportRole::VIP_SUPPORT_ROLE );
+			$this->registering_vip = true;
+		}
 	}
 
 	// CALLBACKS
