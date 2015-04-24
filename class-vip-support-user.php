@@ -66,34 +66,33 @@ class VipSupportUser {
 	// =====
 
 	public function action_admin_notices() {
-		if ( 'users' != get_current_screen()->base ) {
-			return;
-		}
-		if ( isset( $_GET['update'] ) ) {
-			$update = $_GET['update'];
-		} else {
-			return;
-		}
 		$error = false;
 		$message = false;
-		switch ( $update ) {
-			case self::MSG_BLOCK_UPGRADE_NON_A12N :
-				$error = __('Only users with a recognised Automattic email address can be assigned the VIP Support role.', 'vip-support');
-				break;
-			case self::MSG_BLOCK_UPGRADE_VERIFY_EMAIL :
-				$error = __('This user’s Automattic email address must be verified before they can be assigned the VIP Support role.', 'vip-support');
-				break;
-			case self::MSG_BLOCK_NEW_NON_VIP_USER :
-				$error = __('Only Automattic staff can be assigned the VIP Support role, the new user has been made a "subscriber".', 'vip-support');
-				break;
-			case self::MSG_BLOCK_DOWNGRADE :
-				$error = __('VIP Support users can only be assigned the VIP Support role, or deleted.', 'vip-support');
-				break;
-			case self::MSG_MADE_VIP :
-				$message = __('This user was given the VIP Support role, based on their email address.', 'vip-support');
-				break;
-			default:
-				return;
+		if ( 'users' == get_current_screen()->base ) {
+			$update = false;
+			if ( isset( $_GET['update'] ) ) {
+				$update = $_GET['update'];
+			}
+
+			switch ( $update ) {
+				case self::MSG_BLOCK_UPGRADE_NON_A12N :
+					$error = __( 'Only users with a recognised Automattic email address can be assigned the VIP Support role.', 'vip-support' );
+					break;
+				case self::MSG_BLOCK_UPGRADE_VERIFY_EMAIL :
+					$error = __( 'This user’s Automattic email address must be verified before they can be assigned the VIP Support role.', 'vip-support' );
+					break;
+				case self::MSG_BLOCK_NEW_NON_VIP_USER :
+					$error = __( 'Only Automattic staff can be assigned the VIP Support role, the new user has been made a "subscriber".', 'vip-support' );
+					break;
+				case self::MSG_BLOCK_DOWNGRADE :
+					$error = __( 'VIP Support users can only be assigned the VIP Support role, or deleted.', 'vip-support' );
+					break;
+				case self::MSG_MADE_VIP :
+					$message = __( 'This user was given the VIP Support role, based on their email address.', 'vip-support' );
+					break;
+				default:
+					return;
+			}
 		}
 		if ( $error ) {
 			echo '<div id="message" class="notice is-dismissible error"><p>' . $error . '</p></div>';
