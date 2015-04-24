@@ -17,8 +17,9 @@ class VipSupportUser {
 	const META_VERIFICATION_CODE = 'vip_email_verification_code';
 	const META_EMAIL_VERIFIED    = 'vip_verified_email';
 
-	const GET_EMAIL_VERIFY  = 'vip_verify_code';
-	const GET_EMAIL_USER_ID = 'vip_user_id';
+	const GET_EMAIL_VERIFY                = 'vip_verify_code';
+	const GET_EMAIL_USER_ID               = 'vip_user_id';
+	const GET_TRIGGER_RESEND_VERIFICATION = 'vip_trigger_resend';
 
 	protected $reverting_role;
 
@@ -49,12 +50,17 @@ class VipSupportUser {
 	 *
 	 */
 	public function __construct() {
-		add_action( 'admin_notices',   array( $this, 'action_admin_notices' ) );
-		add_action( 'set_user_role',   array( $this, 'action_set_user_role' ), 10, 3 );
-		add_action( 'user_register',   array( $this, 'action_user_register' ) );
-		add_action( 'parse_request',   array( $this, 'action_parse_request' ) );
+		add_action( 'admin_notices',      array( $this, 'action_admin_notices' ) );
+		add_action( 'set_user_role',      array( $this, 'action_set_user_role' ), 10, 3 );
+		add_action( 'user_register',      array( $this, 'action_user_register' ) );
+		add_action( 'parse_request',      array( $this, 'action_parse_request' ) );
+		add_action( 'personal_options',   array( $this, 'action_personal_options' ) );
+		add_action( 'load-user-edit.php', array( $this, 'action_load_user_edit' ) );
+		add_action( 'load-profile.php',   array( $this, 'action_load_profile' ) );
+		add_action( 'admin_head',         array( $this, 'action_admin_head' ) );
 
-		add_filter( 'wp_redirect',     array( $this, 'filter_wp_redirect' ) );
+		add_filter( 'wp_redirect',          array( $this, 'filter_wp_redirect' ) );
+		add_filter( 'removable_query_args', array( $this, 'filter_removable_query_args' ) );
 
 		$this->reverting_role   = false;
 		$this->message_replace  = false;
@@ -65,10 +71,73 @@ class VipSupportUser {
 	// HOOKS
 	// =====
 
+	public function action_admin_head() {
+		if ( in_array( get_current_screen()->base, array( 'user-edit', 'profile' ) ) ) {
+			?>
+			<style type="text/css">
+				.vip-support-email-status {
+					padding-left: 1em;
+				}
+				.vip-support-email-status .dashicons {
+					line-height: 1.6;
+				}
+				.email-not-verified {
+					color: #dd3d36;
+				}
+				.email-verified {
+					color: #7ad03a;
+				}
+			</style>
+			<?php
+		}
+	}
+
+	public function action_load_user_edit() {
+		if ( isset( $_GET[self::GET_TRIGGER_RESEND_VERIFICATION] ) && $_GET[self::GET_TRIGGER_RESEND_VERIFICATION] ) {
+			$user_id = absint( $_GET['user_id'] );
+			$this->send_verification_email( $user_id );
+		}
+	}
+
+	public function action_load_profile() {
+		if ( isset( $_GET[self::GET_TRIGGER_RESEND_VERIFICATION] ) && $_GET[self::GET_TRIGGER_RESEND_VERIFICATION] ) {
+			$user_id = get_current_user_id();
+			$this->send_verification_email( $user_id );
+		}
+	}
+
+	public function action_personal_options( $user ) {
+		if ( ! $this->is_a8c_email( $user->user_email ) ) {
+			return;
+		}
+
+		if ( $this->user_has_verified_email( $user->ID ) ) {
+			$message = __( 'email is verified', 'vip-support' );
+			?>
+			<em id="vip-support-email-status" class="vip-support-email-status email-verified"><span class="dashicons dashicons-yes"></span><?php echo $message; ?></em>
+			<?php
+		} else {
+			$message = __( 'email is not verified', 'vip-support' );
+			?>
+			<em id="vip-support-email-status" class="vip-support-email-status email-not-verified"><span class="dashicons dashicons-no"></span><?php echo $message; ?></em>
+			<?php
+		}
+?>
+		<script type="text/javascript">
+			jQuery( 'document').ready( function( $ ) {
+				$( '#email' ).after( $( '#vip-support-email-status' ) );
+			} );
+		</script>
+<?php
+	}
+
 	public function action_admin_notices() {
-		$error = false;
+		$error   = false;
 		$message = false;
-		if ( 'users' == get_current_screen()->base ) {
+		$screen  = get_current_screen();
+
+		if ( 'users' == $screen->base ) {
+
 			$update = false;
 			if ( isset( $_GET['update'] ) ) {
 				$update = $_GET['update'];
@@ -94,6 +163,34 @@ class VipSupportUser {
 					return;
 			}
 		}
+
+
+		if ( 'profile' == $screen->base ) {
+			if ( isset( $_GET[self::GET_TRIGGER_RESEND_VERIFICATION] ) && $_GET[self::GET_TRIGGER_RESEND_VERIFICATION] ) {
+				$message = __( 'The verification email has been sent, please check your inbox. Delivery may take a few minutes.', 'vip-support' );
+			} else {
+				$user_id = get_current_user_id();
+				$user    = get_user_by( 'id', $user_id );
+				$resend_link = $this->get_trigger_resend_verification_url();
+				if ( $this->is_a8c_email( $user->user_email ) && ! $this->user_has_verified_email( $user->ID ) ) {
+					$error = sprintf( __( 'Your Automattic email address is not verified, <a href="%s">re-send verification email</a>.', 'vip-support' ), esc_url( $resend_link ) );
+				}
+			}
+		}
+
+		if ( 'user-edit' == $screen->base ) {
+			if ( isset( $_GET[self::GET_TRIGGER_RESEND_VERIFICATION] ) && $_GET[self::GET_TRIGGER_RESEND_VERIFICATION] ) {
+				$message = __( 'The verification email has been sent, please ask the user to check their inbox. Delivery may take a few minutes.', 'vip-support' );
+			} else {
+				$user_id = absint( $_GET['user_id'] );
+				$user = get_user_by( 'id', $user_id );
+				$resend_link = $this->get_trigger_resend_verification_url();
+				if ( $this->is_a8c_email( $user->user_email ) && ! $this->user_has_verified_email( $user->ID ) ) {
+					$error = sprintf( __( 'This user’s Automattic email address is not verified, <a href="%s">re-send verification email</a>.', 'vip-support' ), esc_url( $resend_link ) );
+				}
+			}
+		}
+
 		if ( $error ) {
 			echo '<div id="message" class="notice is-dismissible error"><p>' . $error . '</p></div>';
 
@@ -203,6 +300,11 @@ class VipSupportUser {
 		wp_die( $message, $title, array( 'response' => 200 ) );
 	}
 
+	public function filter_removable_query_args( $args ) {
+		$args[] = self::GET_TRIGGER_RESEND_VERIFICATION;
+		return $args;
+	}
+
 	// CALLBACKS
 	// =========
 
@@ -242,6 +344,10 @@ class VipSupportUser {
 		$user = new WP_User( $user_id );
 		$verified_email = get_user_meta( $user_id, self::META_EMAIL_VERIFIED, true );
 		return ( $user->user_email == $verified_email );
+	}
+
+	protected function get_trigger_resend_verification_url() {
+		return add_query_arg( array( self::GET_TRIGGER_RESEND_VERIFICATION => '1' ) );
 	}
 
 	/**
