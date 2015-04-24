@@ -1,8 +1,6 @@
 <?php
 
 /**
- * @TODO: Verify the A12n's email when it changes, even if previous email was not A8c
- * @TODO: Show a tick or something when a user's email has been verified
  *
  * @package VipSupportUser
  **/
