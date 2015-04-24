@@ -288,6 +288,14 @@ class VipSupportUser {
 		if ( ! $user ) {
 			return;
 		}
+		$current_user_id = get_current_user_id();
+		if ( get_current_user_id() != $user_id ) {
+			$message = __( 'This email verification link was not created for your user. Please log in as the user in the email sent to you, and then click the link again.', 'vip-support' );
+			$title = __( 'Verification failed', 'vip-support' );
+			// 403 Forbidden – The server understood the request, but is refusing to fulfill it.
+			// Authorization will not help and the request SHOULD NOT be repeated.
+			wp_die( $message, $title, array( 'response' => 403 ) );
+		}
 
 		$stored_verification_code = (string) get_user_meta( $user_id, self::META_VERIFICATION_CODE, true );
 		$hash_sent                = (string) $_GET[self::GET_EMAIL_VERIFY];
