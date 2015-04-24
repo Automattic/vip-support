@@ -8,11 +8,11 @@
  **/
 class VipSupportUser {
 
-	const MSG_BLOCK_UPGRADE_NON_A12N     = 'vip_1';
-	const MSG_BLOCK_UPGRADE_VERIFY_EMAIL = 'vip_2';
-	const MSG_BLOCK_NEW_NON_VIP_USER     = 'vip_3';
-	const MSG_BLOCK_DOWNGRADE            = 'vip_4';
-	const MSG_MADE_VIP                   = 'vip_5';
+	const MSG_BLOCK_UPGRADE_NON_A12N     = 'vip_support_msg_1';
+	const MSG_BLOCK_UPGRADE_VERIFY_EMAIL = 'vip_support_msg_2';
+	const MSG_BLOCK_NEW_NON_VIP_USER     = 'vip_support_msg_3';
+	const MSG_BLOCK_DOWNGRADE            = 'vip_support_msg_4';
+	const MSG_MADE_VIP                   = 'vip_support_msg_5';
 
 	const META_VERIFICATION_CODE = 'vip_email_verification_code';
 	const META_EMAIL_VERIFIED    = 'vip_verified_email';
