@@ -327,9 +327,9 @@ class VipSupportUser {
 
 		$user = new WP_User( $user_id );
 
-		$message  = __( 'Dear VIP Support User,', 'vip-support' );
+		$message  = __( 'Dear Automattician,', 'vip-support' );
 		$message .= PHP_EOL . PHP_EOL;
-		$message .= sprintf( __( 'Somebody has added you as a support user on %1$s (%2$s). If you are expecting this, please click the link below to verify your email address:', 'vip-support' ), get_bloginfo( 'name' ), home_url() );
+		$message .= sprintf( __( 'You need to verify your Automattic email address for your user on %1$s (%2$s). If you are expecting this, please click the link below to verify your email address:', 'vip-support' ), get_bloginfo( 'name' ), home_url() );
 		$message .= PHP_EOL;
 		$message .= $verification_link;
 		$message .= PHP_EOL . PHP_EOL;
