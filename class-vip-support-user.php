@@ -1,11 +1,7 @@
 <?php
 
 /**
- * @TODO: Verify the A12n's email on registration
- * @TODO: The email to be verified should be hashed with a nonce or with the verification code, so the verification is tied to the specific email address
- * @TODO: We should do a nonce check when the email is verified, so it's only the logged in user who can verify the email
  * @TODO: Verify the A12n's email when it changes, even if previous email was not A8c
- * @TODO: Block logging in until the user has verified their email address
  * @TODO: Show a tick or something when a user's email has been verified
  *
  * @package VipSupportUser
