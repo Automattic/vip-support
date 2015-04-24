@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @TODO: Only the user should be able to verify their email address
  *
  * @package VipSupportUser
  **/
