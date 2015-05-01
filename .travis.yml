@@ -12,6 +12,8 @@ addons:
 
 before_install:
   - sudo apt-get update > /dev/null
+  # These variables have to be set here, so they can be used by
+  # prepare.sh as well as the commands in the script block below
   - export WORDPRESS_SITE_DIR="$(dirname $TRAVIS_BUILD_DIR)/wordpress/"
   - export WORDPRESS_TEST_SUBJECT=$(basename $TRAVIS_BUILD_DIR)
   - export WP_CLI="${TRAVIS_BUILD_DIR}/vendor/bin/wp"
