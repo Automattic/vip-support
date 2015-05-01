@@ -22,7 +22,6 @@ class VipSupportUser {
 	protected $reverting_role;
 
 	protected $message_replace;
-	protected $registering_user;
 	protected $registering_vip;
 
 	/**
@@ -64,7 +63,6 @@ class VipSupportUser {
 		$this->reverting_role   = false;
 		$this->message_replace  = false;
 		$this->registering_vip  = false;
-		$this->registering_user = false;
 	}
 
 	// HOOKS
@@ -252,7 +250,6 @@ class VipSupportUser {
 	}
 
 	public function action_user_register( $user_id ) {
-		$this->registering_user = true;
 		$user = new WP_User( $user_id );
 		if ( $this->is_a8c_email( $user->user_email ) ) {
 			$user->set_role( VipSupportRole::VIP_SUPPORT_ROLE );
