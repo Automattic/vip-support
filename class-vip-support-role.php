@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * Provides the VIP Support role
  *
  * @package VipSupportRole
  **/
@@ -11,7 +12,8 @@ class VipSupportRole {
 	protected $version;
 
 	/**
-	 * Singleton stuff.
+	 * Initiate an instance of this class if one doesn't
+	 * exist already. Return the VipSupportRole instance.
 	 *
 	 * @access @static
 	 *
@@ -29,8 +31,8 @@ class VipSupportRole {
 	}
 
 	/**
-	 * Class constructor
-	 *
+	 * Class constructor. Handles hooking actions and filters,
+	 * and sets some properties.
 	 */
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
@@ -41,6 +43,9 @@ class VipSupportRole {
 	// HOOKS
 	// =====
 
+	/**
+	 * Hooks the admin_init action to run an update method.
+	 */
 	public function action_admin_init() {
 		$this->update();
 	}
@@ -48,6 +53,11 @@ class VipSupportRole {
 	// UTILITIES
 	// =========
 
+	/**
+	 * Log errors if WP_DEBUG is defined and true.
+	 *
+	 * @param string $message The message to log
+	 */
 	protected function error_log( $message ) {
 		if ( defined( 'WP_DEBUG' ) || WP_DEBUG ) {
 			error_log( $message );
@@ -56,7 +66,8 @@ class VipSupportRole {
 	}
 
 	/**
-	 * Runs any updates.
+	 * Checks the version option value against the version
+	 * property value, and runs update routines as appropriate.
 	 *
 	 */
 	protected function update() {
@@ -79,8 +90,5 @@ class VipSupportRole {
 
 	}
 }
-
-
-// Initiate the singleton
 
 VipSupportRole::init();
