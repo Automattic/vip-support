@@ -57,7 +57,7 @@ function a8c_vip_get_fake_mail_for( $email_address ) {
 	$emails = array();
 	// List contents of Fake Mail directory
 	$file_pattern = WORDPRESS_FAKE_MAIL_DIR . '*' . $email_address . '*';
-	foreach ( $file_pattern ) as $email ) {
+	foreach ( glob( $file_pattern ) as $email ) {
 		$emails[] = $email;
 	}
 	return $emails;
