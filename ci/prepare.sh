@@ -28,8 +28,6 @@ sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.ph
 sudo a2enmod rewrite actions fastcgi alias
 echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
-ls -alh /home/travis/.phpenv/versions/5.4.37/
-sudo service --status-all
 
 # configure apache virtual hosts
 # @TODO Allow HTTPS connections (need a solution which doesn't mind self-signed certs)
