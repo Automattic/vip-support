@@ -22,9 +22,9 @@ class VipSupportUser {
 	protected $reverting_role;
 
 	protected $message_replace;
-	protected $registering_vip;
 
 	/**
+	protected $registering_a12n;
 	 * Singleton stuff.
 	 *
 	 * @access @static
@@ -62,7 +62,7 @@ class VipSupportUser {
 
 		$this->reverting_role   = false;
 		$this->message_replace  = false;
-		$this->registering_vip  = false;
+		$this->registering_a12n  = false;
 	}
 
 	// HOOKS
@@ -235,14 +235,14 @@ class VipSupportUser {
 	}
 
 	public function filter_wp_redirect( $location ) {
-		if ( ! $this->message_replace && ! $this->registering_vip ) {
+		if ( ! $this->message_replace && ! $this->registering_a12n ) {
 			return $location;
 		}
 		if ( $this->message_replace ) {
 			$location = add_query_arg( array( 'update' => $this->message_replace ), $location );
 			$location = esc_url_raw( $location );
 		}
-		if ( $this->registering_vip ) {
+		if ( $this->registering_a12n ) {
 			$location = add_query_arg( array( 'update' => self::MSG_MADE_VIP ), $location );
 			$location = esc_url_raw( $location );
 		}
@@ -253,7 +253,7 @@ class VipSupportUser {
 		$user = new WP_User( $user_id );
 		if ( $this->is_a8c_email( $user->user_email ) ) {
 			$user->set_role( VipSupportRole::VIP_SUPPORT_ROLE );
-			$this->registering_vip = true;
+			$this->registering_a12n = true;
 			update_user_meta( $user_id, self::META_EMAIL_VERIFIED, false );
 			$this->send_verification_email( $user_id );
 		} else {
