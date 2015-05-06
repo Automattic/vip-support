@@ -89,3 +89,13 @@ Feature: Automattic users are in the VIP Support Role
     When I am on "/wp-admin/users.php?role=vip_support"
     Then I should not see "random_user"
 
+  @javascript @insulated
+  Scenario: Existing non-A8c users cannot be assigned the VIP Support role
+    Given I am logged in as "admin" with the password "password" and I am on "/wp-admin/users.php?s=random_user"
+    And I follow "random_user"
+    And I select "VIP Support" from "Role"
+    And I press "Update User"
+    Then I should not see "This user’s Automattic email address is not verified"
+    And I should see "Only users with a recognised Automattic email address can be assigned the VIP Support role."
+    When I am on "/wp-admin/users.php?role=vip_support"
+    Then I should not see "random_user"
