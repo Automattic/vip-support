@@ -233,6 +233,7 @@ class VipSupportUser {
 					$error = __( 'Only users with a recognised Automattic email address can be assigned the VIP Support role.', 'vip-support' );
 					break;
 				case self::MSG_BLOCK_UPGRADE_VERIFY_EMAIL :
+				case self::MSG_MADE_VIP :
 					$error = __( 'This user’s Automattic email address must be verified before they can be assigned the VIP Support role.', 'vip-support' );
 					break;
 				case self::MSG_BLOCK_NEW_NON_VIP_USER :
@@ -240,9 +241,6 @@ class VipSupportUser {
 					break;
 				case self::MSG_BLOCK_DOWNGRADE :
 					$error = __( 'VIP Support users can only be assigned the VIP Support role, or deleted.', 'vip-support' );
-					break;
-				case self::MSG_MADE_VIP :
-					$message = __( 'This user was given the VIP Support role, based on their email address.', 'vip-support' );
 					break;
 				default:
 					return;
