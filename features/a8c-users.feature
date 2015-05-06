@@ -70,3 +70,22 @@ Feature: Automattic users are in the VIP Support Role
     Then I should not see "You do not have sufficient permissions to access this page."
     And I should see "General Settings"
 
+  @javascript @insulated
+  Scenario: New non-A8c users cannot be assigned the VIP Support role
+    Given I am logged in as "admin" with the password "password" and I am on "/wp-admin/user-new.php"
+    Then I should see "Add New User"
+    When I fill in "Username" with "random_user"
+    And I fill in "E-mail" with "random_user@example.invalid"
+    And I fill in "Password" with "password"
+    And I fill in "Repeat Password" with "password"
+    And I select "VIP Support" from "Role"
+    And I press "Add New User"
+    Then I should see "Only Automattic staff can be assigned the VIP Support role"
+    And I should not see "This user was given the VIP Support role"
+    When I follow "random_user"
+    Then I should see "Personal Options"
+    And I should not see "email is not verified"
+    And I should not see "email is verified"
+    When I am on "/wp-admin/users.php?role=vip_support"
+    Then I should not see "random_user"
+
