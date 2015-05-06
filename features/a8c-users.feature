@@ -58,4 +58,15 @@ Feature: Automattic users are in the VIP Support Role
     When I am on "/wp-admin/users.php?role=vip_support"
     Then I should see "actual_a8c_user"
 
+  @javascript @insulated
+  Scenario: VIP Support users can do Administrator type things
+    Given I am logged in as "actual_a8c_user" with the password "password" and I am on "/wp-admin/plugins.php"
+    Then I should not see "You do not have sufficient permissions to access this page."
+    And I should see "Plugins"
+    When I am on "/wp-admin/users.php"
+    Then I should not see "You do not have sufficient permissions to access this page."
+    And I should see "Users"
+    When I am on "/wp-admin/options-general.php"
+    Then I should not see "You do not have sufficient permissions to access this page."
+    And I should see "General Settings"
 
