@@ -11,7 +11,7 @@ Feature: Automattic users are in the VIP Support Role
     And I fill in "E-mail" with "actual_a8c_user@automattic.com"
     And I fill in "Password" with "password"
     And I fill in "Repeat Password" with "password"
-    And I select "contributor" from "Role"
+    And I select "VIP Support" from "Role"
     And I press "Add New User"
     Then I should not see "This user was given the VIP Support role"
     And I should see "This user’s Automattic email address must be verified before they can be assigned the VIP Support role."
