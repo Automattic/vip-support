@@ -37,6 +37,20 @@ class FeatureContext extends MinkContext {
 	}
 
 	/**
+	 * @When /^I am logged in as "([^"]+)" with the password "([^"]+)" and I am on "([^"]+)"$/
+	 */
+	public function wpLogin( $username, $password, $redirect_to ) {
+		$session = $this->getSession();
+		$context = $this->getMainContext();
+		$url = $context->locatePath( '/wp-login.php' );
+		$url .= '?' . http_build_query( array( 'redirect_to' => $redirect_to ) );
+		$session->visit( $url );
+		$this->fillField( 'Username', $username );
+		$this->fillField( 'Password', $password );
+		$this->pressButton( 'Log In' );
+	}
+
+	/**
 	 * Checks, that current page PATH matches regular expression.
 	 *
 	 * @Then /^the request URI should match (?P<pattern>"([^"]|\\")*")$/
