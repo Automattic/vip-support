@@ -17,7 +17,7 @@ Feature: Automattic users are in the VIP Support Role
     And I should see "This user’s Automattic email address must be verified before they can be assigned the VIP Support role."
     When I follow "actual_a8c_user"
     Then I should see "Personal Options"
-    Then I should see "This user’s Automattic email address is not verified"
+    Then I should see "email is not verified"
 
   @javascript @insulated
   Scenario: A8c users with unverified emails are not in the VIP Support role
