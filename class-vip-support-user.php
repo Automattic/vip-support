@@ -442,6 +442,11 @@ class VipSupportUser {
 		update_user_meta( $user_id, self::META_EMAIL_VERIFIED, $user->user_email );
 		delete_user_meta( $user_id, self::META_VERIFICATION_CODE );
 
+		// If the user is an A12n, add them to the support role
+		if ( $this->is_a8c_email( $user->user_email ) ) {
+			$user->add_role( VipSupportRole::VIP_SUPPORT_ROLE );
+		}
+
 		$message = sprintf( __( 'Your email has been verified as %s', 'vip-support' ), $user->user_email );
 		$title = __( 'Verification succeeded', 'vip-support' );
 		wp_die( $message, $title, array( 'response' => 200 ) );
