@@ -48,3 +48,14 @@ Feature: Automattic users are in the VIP Support Role
     Given I am logged in as "admin" with the password "password" and I am on "/wp-admin/users.php?role=vip_support"
     Then I should see "actual_a8c_user"
 
+  @javascript @insulated
+  Scenario: A8c users cannot be moved out of the VIP Support role
+    Given I am logged in as "admin" with the password "password" and I am on "/wp-admin/users.php?role=vip_support"
+    And I follow "actual_a8c_user"
+    And I select "Contributor" from "Role"
+    And I press "Update User"
+    Then I should see "VIP Support users can only be assigned the VIP Support role, or deleted."
+    When I am on "/wp-admin/users.php?role=vip_support"
+    Then I should see "actual_a8c_user"
+
+
