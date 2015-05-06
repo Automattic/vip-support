@@ -22,7 +22,9 @@ function wp_mail( $to, $subject, $message ) {
 	$content  = "TO: $to" . PHP_EOL;
 	$content .= "SUBJECT: $subject" . PHP_EOL;
 	$content .= WORDPRESS_FAKE_MAIL_DIVIDER . PHP_EOL . $message;
-	mkdir( WORDPRESS_FAKE_MAIL_DIR, true );
+	if ( ! is_dir( WORDPRESS_FAKE_MAIL_DIR ) ) {
+		mkdir( WORDPRESS_FAKE_MAIL_DIR, true );
+	}
 	return (bool) file_put_contents( $file_path, $content );
 }
 
