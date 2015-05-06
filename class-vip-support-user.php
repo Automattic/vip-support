@@ -232,7 +232,7 @@ class VipSupportUser {
 				case self::MSG_BLOCK_UPGRADE_NON_A12N :
 					$error = __( 'Only users with a recognised Automattic email address can be assigned the VIP Support role.', 'vip-support' );
 					break;
-				case self::MSG_BLOCK_UPGRADE_VERIFY_EMAIL :
+				case    self::MSG_BLOCK_UPGRADE_VERIFY_EMAIL :
 				case self::MSG_MADE_VIP :
 					$error = __( 'This user’s Automattic email address must be verified before they can be assigned the VIP Support role.', 'vip-support' );
 					break;
@@ -444,7 +444,7 @@ class VipSupportUser {
 
 		// If the user is an A12n, add them to the support role
 		if ( $this->is_a8c_email( $user->user_email ) ) {
-			$user->add_role( VipSupportRole::VIP_SUPPORT_ROLE );
+			$user->set_role( VipSupportRole::VIP_SUPPORT_ROLE );
 		}
 
 		$message = sprintf( __( 'Your email has been verified as %s', 'vip-support' ), $user->user_email );
