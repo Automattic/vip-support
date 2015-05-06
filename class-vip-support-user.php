@@ -221,7 +221,7 @@ class VipSupportUser {
 		$screen  = get_current_screen();
 
 		// Messages on the users list screen
-		if ( 'users' == $screen->base ) {
+		if ( in_array( $screen->base, array( 'users', 'user-edit', 'profile' ) ) ) {
 
 			$update = false;
 			if ( isset( $_GET['update'] ) ) {
