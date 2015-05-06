@@ -14,7 +14,7 @@ Feature: Automattic users are in the VIP Support Role
     And I select "contributor" from "Role"
     And I press "Add New User"
     Then I should not see "This user was given the VIP Support role"
-    And I should see "This user’s Automattic email address is not verified"
+    And I should see "This user’s Automattic email address must be verified before they can be assigned the VIP Support role."
     When I follow "actual_a8c_user"
     Then I should see "Personal Options"
     Then I should see "This user’s Automattic email address is not verified"
