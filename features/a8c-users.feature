@@ -100,4 +100,3 @@ Feature: Automattic users are in the VIP Support Role
     When I am on "/wp-admin/users.php?role=vip_support"
     Then I should not see "random_user"
 
-    
