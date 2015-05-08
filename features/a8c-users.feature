@@ -99,3 +99,5 @@ Feature: Automattic users are in the VIP Support Role
     And I should see "Only users with a recognised Automattic email address can be assigned the VIP Support role."
     When I am on "/wp-admin/users.php?role=vip_support"
     Then I should not see "random_user"
+
+    
