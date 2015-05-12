@@ -56,6 +56,21 @@ cp -pr $TRAVIS_BUILD_DIR $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
 ls -al $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
 
 # Copy the No Mail MU plugin into place
-mkdir -p $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
+mkdir -p $WORDPRESS_SITE_DIR/wp-content/mu-plugins/$WORDPRESS_TEST_SUBJECT
+
 cp -pr $TRAVIS_BUILD_DIR/features/bootstrap/fake-mail.php $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
 
+cat <<EOT >> $WORDPRESS_SITE_DIR/wp-content/mu-plugins/vip-support-bootstrap.php
+<?php
+/**
+ * Plugin Name:  WordPress.com VIP Support
+ * Plugin URI:   https://vip.wordpress.com/documentation/contacting-vip-hosting/
+ * Description:  Manages the WordPress.com Support Users on your site
+ * Version:      1.0
+ * Author:       <a href="http://automattic.com">Automattic</a>
+ * License:      GPLv2 or later
+ */
+
+require_once( "vip-support/vip-support.php" );
+
+EOT
