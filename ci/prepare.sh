@@ -72,6 +72,6 @@ cat <<EOT >> $WORDPRESS_SITE_DIR/wp-content/mu-plugins/vip-support-bootstrap.php
  * License:      GPLv2 or later
  */
 
-require_once( dirname( __FILE__ ) . '/vip-support/vip-support.php' );
+require_once( dirname( __FILE__ ) . '/${WORDPRESS_TEST_SUBJECT}/vip-support.php' );
 
 EOT
