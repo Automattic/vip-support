@@ -30,6 +30,7 @@ script:
   # Debugging
   - cat $WORDPRESS_SITE_DIR/wp-content/mu-plugins/vip-support-bootstrap.php
   - ls -al $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
+  - ls -al $WORDPRESS_SITE_DIR/wp-content/mu-plugins/${WORDPRESS_TEST_SUBJECT}/
   - ls -al $WORDPRESS_SITE_DIR/wp-content/mu-plugins/${WORDPRESS_TEST_SUBJECT}/vendor/
   - ls -al $WORDPRESS_SITE_DIR/wp-content/mu-plugins/${WORDPRESS_TEST_SUBJECT}/vendor/bin/
   - $WP_CLI plugin list --path="$WORDPRESS_SITE_DIR"
