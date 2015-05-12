@@ -4,6 +4,11 @@ Feature: Automattic users are in the VIP Support Role
   I must clearly see who is an VIP Support user
 
   @javascript @insulated
+  Scenario: The plugin is shown as active in Must Use plugins
+    Given I am logged in as "admin" with the password "password" and I am on "/wp-admin/plugins.php?plugin_status=mustuse"
+    Then I should see "WordPress.com VIP Support"
+
+  @javascript @insulated
   Scenario: Adding an A8c user requires them to verify their email address
     Given I am logged in as "admin" with the password "password" and I am on "/wp-admin/user-new.php"
     Then I should see "Add New User"
