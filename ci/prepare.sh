@@ -51,13 +51,14 @@ define( 'WORDPRESS_FAKE_MAIL_DIR', '${WORDPRESS_FAKE_MAIL_DIR}' );
 PHP
 $WP_CLI core install --url=local.wordpress.dev --title="WordPress Testing" --admin_user=admin --admin_password=password --admin_email=testing@example.invalid
 
+# Make MU plugins
+mkdir -p $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
+
 # Copy the plugin into MU plugins
 cp -pr $TRAVIS_BUILD_DIR $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
 ls -al $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
 
 # Copy the No Mail MU plugin into place
-mkdir -p $WORDPRESS_SITE_DIR/wp-content/mu-plugins/$WORDPRESS_TEST_SUBJECT
-
 cp -pr $TRAVIS_BUILD_DIR/features/bootstrap/fake-mail.php $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
 
 cat <<EOT >> $WORDPRESS_SITE_DIR/wp-content/mu-plugins/vip-support-bootstrap.php
