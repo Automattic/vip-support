@@ -28,6 +28,7 @@ before_script:
 
 script:
   # Debugging
+  - cat $WORDPRESS_SITE_DIR/wp-content/mu-plugins/vip-support-bootstrap.php
   - echo "ls -al $WORDPRESS_SITE_DIR/wp-content/mu-plugins/"
   - ls -al $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
   - echo "${WORDPRESS_SITE_DIR}/wp-content/mu-plugins/${WORDPRESS_TEST_SUBJECT}/vendor/bin/behat -c $WORDPRESS_SITE_DIR/wp-content/mu-plugins/${WORDPRESS_TEST_SUBJECT}/behat.yml"
