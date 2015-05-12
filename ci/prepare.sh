@@ -50,6 +50,7 @@ $WP_CLI core config --dbname=wordpress --dbuser=wordpress --dbpass=password <<PH
 define( 'WORDPRESS_FAKE_MAIL_DIR', '${WORDPRESS_FAKE_MAIL_DIR}' );
 PHP
 $WP_CLI core install --url=local.wordpress.dev --title="WordPress Testing" --admin_user=admin --admin_password=password --admin_email=testing@example.invalid
+
 # Copy the plugin into MU plugins
 cp -pr $TRAVIS_BUILD_DIR $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
 ls -al $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
