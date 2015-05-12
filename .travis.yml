@@ -32,7 +32,7 @@ script:
   - ls -al $WORDPRESS_SITE_DIR/wp-content/mu-plugins/
   - ls -al $WORDPRESS_SITE_DIR/wp-content/mu-plugins/${WORDPRESS_TEST_SUBJECT}/vendor/
   - ls -al $WORDPRESS_SITE_DIR/wp-content/mu-plugins/${WORDPRESS_TEST_SUBJECT}/vendor/bin/
-  - $WP_CLI plugin list
+  - $WP_CLI plugin list --path="$WORDPRESS_SITE_DIR"
 
 
   # Create display.
