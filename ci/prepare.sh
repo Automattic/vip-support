@@ -64,7 +64,7 @@ cp -pr $TRAVIS_BUILD_DIR/features/bootstrap/fake-mail.php $WORDPRESS_SITE_DIR/wp
 cat <<EOT >> $WORDPRESS_SITE_DIR/wp-content/mu-plugins/vip-support-bootstrap.php
 <?php
 /**
- * Plugin Name:  WordPress.com VIP Support
+ * Plugin Name:  WordPress.com VIP Support (MU)
  * Plugin URI:   https://vip.wordpress.com/documentation/contacting-vip-hosting/
  * Description:  Manages the WordPress.com Support Users on your site
  * Version:      1.0
@@ -72,6 +72,6 @@ cat <<EOT >> $WORDPRESS_SITE_DIR/wp-content/mu-plugins/vip-support-bootstrap.php
  * License:      GPLv2 or later
  */
 
-require_once( "vip-support/vip-support.php" );
+require_once( dirname( __FILE__ ) . '/vip-support/vip-support.php' );
 
 EOT
