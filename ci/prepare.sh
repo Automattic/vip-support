@@ -21,6 +21,9 @@ mysql -e 'GRANT ALL PRIVILEGES ON wordpress.* TO "wordpress"@"localhost" IDENTIF
 
 sudo apt-get install apache2 libapache2-mod-fastcgi
 
+# Parallel for running PHPLint quicker
+sudo apt-get install parallel
+
 # enable php-fpm
 # Get the WORDPRESS_FAKE_MAIL_DIR into PHP as an environment variable
 echo "env[WORDPRESS_FAKE_MAIL_DIR] = ${WORDPRESS_FAKE_MAIL_DIR}" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default
