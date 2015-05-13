@@ -55,6 +55,8 @@ class VipSupportRole {
 
 
 	/**
+	 * Hooks the user_has_cap filter to allow VIP Support role users to do EVERYTHING
+	 *
 	 * Rather than explicitly adding all the capabilities to the admin role, and possibly
 	 * missing some custom ones, or copying a role, and possibly being tripped up when
 	 * that role doesn't exist, we filter all user capability checks and wave past our
