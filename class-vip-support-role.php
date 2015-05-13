@@ -9,7 +9,11 @@ class VipSupportRole {
 
 	const VIP_SUPPORT_ROLE = 'vip_support';
 
-	protected $version;
+	/**
+	 * A version used to determine any necessary
+	 * update routines to be run.
+	 */
+	const VERSION = 1;
 
 	/**
 	 * Initiate an instance of this class if one doesn't
@@ -36,8 +40,6 @@ class VipSupportRole {
 	 */
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
-
-		$this->version = 1;
 	}
 
 	// HOOKS
@@ -74,19 +76,19 @@ class VipSupportRole {
 		$option_name = 'vipsupportrole_version';
 		$version = get_option( $option_name, 0 );
 
-		if ( $version == $this->version ) {
+		if ( $version == self::VERSION ) {
 			return;
 		}
 
 		if ( $version < 1 ) {
 			add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), get_role( 'administrator' )->capabilities );
-		    $this->error_log( "VIP Support Role: Done upgrade, now at version " . $this->version );
+		    $this->error_log( "VIP Support Role: Added VIP Support role " );
 		}
 
-		// N.B. Remember to increment $this->version above when you add a new IF
+		// N.B. Remember to increment self::VERSION above when you add a new IF
 
-		update_option( $option_name, $this->version );
-		$this->error_log( "VIP Support Role: Done upgrade, now at version " . $this->version );
+		update_option( $option_name, self::VERSION );
+		$this->error_log( "VIP Support Role: Done upgrade, now at version " . self::VERSION );
 
 	}
 }
