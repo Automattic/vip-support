@@ -96,7 +96,7 @@ class VipSupportRole {
 	 */
 	protected function update() {
 		$option_name = 'vipsupportrole_version';
-		$version = get_option( $option_name, 0 );
+		$version = absint( get_option( $option_name, 0 ) );
 
 		if ( $version == self::VERSION ) {
 			return;
