@@ -27,6 +27,10 @@ install:
 before_script:
 
 script:
+  # PHP Lint
+  - >
+    echo "Running php lint";
+    find . -name \*.php -not -path "vendor/*" | parallel --gnu php -d display_errors=stderr -l {} > /dev/null \;
 
   # Create display.
   - export DISPLAY=:99.0
@@ -37,7 +41,6 @@ script:
   - wget http://selenium-release.storage.googleapis.com/2.45/selenium-server-standalone-2.45.0.jar
   - java -jar selenium-server-standalone-2.45.0.jar -p 4444 > ~/selenium.log 2>&1 &
   - sleep 10 # Give Selenium some time to get going
-
 
   # Run behat tests.
   - ${WORDPRESS_SITE_DIR}/wp-content/mu-plugins/${WORDPRESS_TEST_SUBJECT}/vendor/bin/behat -c $WORDPRESS_SITE_DIR/wp-content/mu-plugins/${WORDPRESS_TEST_SUBJECT}/behat.yml
