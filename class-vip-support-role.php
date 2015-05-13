@@ -40,6 +40,7 @@ class VipSupportRole {
 	 */
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
+		add_filter( 'editable_roles', array( $this, 'filter_editable_roles' ) );
 		add_filter( 'user_has_cap', array( $this, 'filter_user_has_cap' ), 10, 4 );
 	}
 
@@ -74,6 +75,21 @@ class VipSupportRole {
 			$user_caps[$args[0]] = true;
 		}
 		return $user_caps;
+	}
+
+	/**
+	 * Hooks the editable_roles filter to place the VIP Support at the bottom of
+	 * any roles listing.
+	 *
+	 * @param array $roles An array of WP role data
+	 *
+	 * @return array An array of WP role data
+	 */
+	public function filter_editable_roles( array $roles ) {
+		$vip_support_role = array( self::VIP_SUPPORT_ROLE => $roles[self::VIP_SUPPORT_ROLE] );
+		unset( $roles[self::VIP_SUPPORT_ROLE] );
+		$roles = array_merge( $vip_support_role, $roles );
+		return $roles;
 	}
 
 	// UTILITIES
