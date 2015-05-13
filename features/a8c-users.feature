@@ -104,4 +104,26 @@ Feature: Automattic users are in the VIP Support Role
     And I should see "Only users with a recognised Automattic email address can be assigned the VIP Support role."
     When I am on "/wp-admin/users.php?role=vip_support"
     Then I should not see "random_user"
+    
+  @javascript @insulated
+  Scenario: Adding a subscriber user for the next test
+    Given I am logged in as "admin" with the password "password" and I am on "/wp-admin/user-new.php"
+    Then I should see "Add New User"
+    When I fill in "Username" with "subscriber"
+    And I fill in "E-mail" with "subscriber@example.invalid"
+    And I fill in "Password" with "password"
+    And I fill in "Repeat Password" with "password"
+    And I select "Subscriber" from "Role"
+    And I press "Add New User"
 
+  @javascript @insulated
+  Scenario: Subscriber users do not accidentally have elevated capabilities
+    Given I am logged in as "subscriber" with the password "password" and I am on "/wp-admin/plugins.php"
+    Then I should see "You do not have sufficient permissions to access this page."
+    And I should not see "Plugins"
+    When I am on "/wp-admin/users.php"
+    Then I should see "Cheatin’ uh?"
+    And I should not see "Users"
+    When I am on "/wp-admin/options-general.php"
+    Then I should see "You do not have sufficient permissions to access this page."
+    And I should not see "General Settings"

@@ -40,6 +40,7 @@ class VipSupportRole {
 	 */
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
+		add_filter( 'user_has_cap', array( $this, 'filter_user_has_cap' ), 10, 4 );
 	}
 
 	// HOOKS
@@ -50,6 +51,27 @@ class VipSupportRole {
 	 */
 	public function action_admin_init() {
 		$this->update();
+	}
+
+
+	/**
+	 * Rather than explicitly adding all the capabilities to the admin role, and possibly
+	 * missing some custom ones, or copying a role, and possibly being tripped up when
+	 * that role doesn't exist, we filter all user capability checks and wave past our
+	 * VIP Support users as automattically having the capability being checked.
+	 *
+	 * @param array   $user_caps An array of all the user's capabilities.
+	 * @param array   $caps      Actual capabilities for meta capability.
+	 * @param array   $args      Optional parameters passed to has_cap(), typically object ID.
+	 * @param WP_User $user      The user object.
+	 *
+	 * @return array An array of all the user's caps, with the required cap added
+	 */
+	public function filter_user_has_cap( array $user_caps, array $caps, array $args, WP_User $user ) {
+		if ( in_array( self::VIP_SUPPORT_ROLE, $user->roles ) ) {
+			$user_caps[$args[0]] = true;
+		}
+		return $user_caps;
 	}
 
 	// UTILITIES
@@ -81,7 +103,7 @@ class VipSupportRole {
 		}
 
 		if ( $version < 1 ) {
-			add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), get_role( 'administrator' )->capabilities );
+			add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), array( 'read' => true ) );
 		    $this->error_log( "VIP Support Role: Added VIP Support role " );
 		}
 
