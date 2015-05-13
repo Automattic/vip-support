@@ -29,8 +29,8 @@ before_script:
 script:
   # PHP Lint
   - >
-    echo "Running php lint";
-    find . -name \*.php -not -path "vendor/*" | parallel --gnu php -d display_errors=stderr -l {} > /dev/null \;
+    echo "Running php lint on ${WORDPRESS_SITE_DIR}/wp-content/mu-plugins/${WORDPRESS_TEST_SUBJECT}/";
+    find "${WORDPRESS_SITE_DIR}/wp-content/mu-plugins/${WORDPRESS_TEST_SUBJECT}/" -name \*.php -not -path "${WORDPRESS_SITE_DIR}/wp-content/mu-plugins/${WORDPRESS_TEST_SUBJECT}/vendor/*" | parallel --gnu php -d display_errors=stderr -l {} > /dev/null \;
 
   # Create display.
   - export DISPLAY=:99.0
