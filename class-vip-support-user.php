@@ -218,9 +218,9 @@ class VipSupportUser {
 	 * also resends verification emails when required.
 	 */
 	public function action_admin_notices() {
-		$error   = false;
-		$message = false;
-		$screen  = get_current_screen();
+		$error_html   = false;
+		$message_html = false;
+		$screen       = get_current_screen();
 
 		// Messages on the users list screen
 		if ( in_array( $screen->base, array( 'users', 'user-edit', 'profile' ) ) ) {
@@ -232,17 +232,17 @@ class VipSupportUser {
 
 			switch ( $update ) {
 				case self::MSG_BLOCK_UPGRADE_NON_A12N :
-					$error = __( 'Only users with a recognised Automattic email address can be assigned the VIP Support role.', 'vip-support' );
+					$error_html = __( 'Only users with a recognised Automattic email address can be assigned the VIP Support role.', 'vip-support' );
 					break;
 				case    self::MSG_BLOCK_UPGRADE_VERIFY_EMAIL :
 				case self::MSG_MADE_VIP :
-					$error = __( 'This user’s Automattic email address must be verified before they can be assigned the VIP Support role.', 'vip-support' );
+					$error_html = __( 'This user’s Automattic email address must be verified before they can be assigned the VIP Support role.', 'vip-support' );
 					break;
 				case self::MSG_BLOCK_NEW_NON_VIP_USER :
-					$error = __( 'Only Automattic staff can be assigned the VIP Support role, the new user has been made a "subscriber".', 'vip-support' );
+					$error_html = __( 'Only Automattic staff can be assigned the VIP Support role, the new user has been made a "subscriber".', 'vip-support' );
 					break;
 				case self::MSG_BLOCK_DOWNGRADE :
-					$error = __( 'VIP Support users can only be assigned the VIP Support role, or deleted.', 'vip-support' );
+					$error_html = __( 'VIP Support users can only be assigned the VIP Support role, or deleted.', 'vip-support' );
 					break;
 				default:
 					return;
@@ -252,13 +252,13 @@ class VipSupportUser {
 		// Messages on the user's own profile edit screen
 		if ( 'profile' == $screen->base ) {
 			if ( isset( $_GET[self::GET_TRIGGER_RESEND_VERIFICATION] ) && $_GET[self::GET_TRIGGER_RESEND_VERIFICATION] ) {
-				$message = __( 'The verification email has been sent, please check your inbox. Delivery may take a few minutes.', 'vip-support' );
+				$message_html = __( 'The verification email has been sent, please check your inbox. Delivery may take a few minutes.', 'vip-support' );
 			} else {
 				$user_id = get_current_user_id();
 				$user    = get_user_by( 'id', $user_id );
 				$resend_link = $this->get_trigger_resend_verification_url();
 				if ( $this->is_a8c_email( $user->user_email ) && ! $this->user_has_verified_email( $user->ID ) ) {
-					$error = sprintf( __( 'Your Automattic email address is not verified, <a href="%s">re-send verification email</a>.', 'vip-support' ), esc_url( $resend_link ) );
+					$error_html = sprintf( __( 'Your Automattic email address is not verified, <a href="%s">re-send verification email</a>.', 'vip-support' ), esc_url( $resend_link ) );
 				}
 			}
 		}
@@ -266,24 +266,24 @@ class VipSupportUser {
 		// Messages on the user edit screen for another user
 		if ( 'user-edit' == $screen->base ) {
 			if ( isset( $_GET[self::GET_TRIGGER_RESEND_VERIFICATION] ) && $_GET[self::GET_TRIGGER_RESEND_VERIFICATION] ) {
-				$message = __( 'The verification email has been sent, please ask the user to check their inbox. Delivery may take a few minutes.', 'vip-support' );
+				$message_html = __( 'The verification email has been sent, please ask the user to check their inbox. Delivery may take a few minutes.', 'vip-support' );
 			} else {
 				$user_id = absint( $_GET['user_id'] );
 				$user = get_user_by( 'id', $user_id );
 				$resend_link = $this->get_trigger_resend_verification_url();
 				if ( $this->is_a8c_email( $user->user_email ) && ! $this->user_has_verified_email( $user->ID ) ) {
-					$error = sprintf( __( 'This user’s Automattic email address is not verified, <a href="%s">re-send verification email</a>.', 'vip-support' ), esc_url( $resend_link ) );
+					$error_html = sprintf( __( 'This user’s Automattic email address is not verified, <a href="%s">re-send verification email</a>.', 'vip-support' ), esc_url( $resend_link ) );
 				}
 			}
 		}
 
 		// For is-dismissible see https://make.wordpress.org/core/2015/04/23/spinners-and-dismissible-admin-notices-in-4-2/
-		if ( $error ) {
-			echo '<div id="message" class="notice is-dismissible error"><p>' . $error . '</p></div>';
+		if ( $error_html ) {
+			echo '<div id="message" class="notice is-dismissible error"><p>' . $error_html . '</p></div>';
 
 		}
-		if ( $message ) {
-			echo '<div id="message" class="notice is-dismissible updated"><p>' . $message . '</p></div>';
+		if ( $message_html ) {
+			echo '<div id="message" class="notice is-dismissible updated"><p>' . $message_html . '</p></div>';
 
 		}
 	}
