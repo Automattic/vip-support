@@ -54,7 +54,6 @@ class VipSupportRole {
 		$this->update();
 	}
 
-
 	/**
 	 * Hooks the user_has_cap filter to allow VIP Support role users to do EVERYTHING
 	 *
