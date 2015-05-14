@@ -58,7 +58,6 @@ install_test_suite() {
 		mkdir -p $WP_TESTS_DIR
 		svn co --quiet http://develop.svn.wordpress.org/trunk/tests/phpunit/ $WP_TESTS_DIR
 	fi
-	find $WP_TESTS_DIR -type f
 
 	cd $WP_TESTS_DIR
 
@@ -70,8 +69,6 @@ install_test_suite() {
 		sed $ioption "s/yourpasswordhere/$DB_PASS/" wp-tests-config.php
 		sed $ioption "s|localhost|${DB_HOST}|" wp-tests-config.php
 	fi
-
-	exit 1
 
 }
 
