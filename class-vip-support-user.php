@@ -192,14 +192,16 @@ class VipSupportUser {
 		}
 
 		if ( $this->user_has_verified_email( $user->ID ) ) {
-			$message = __( 'email is verified', 'vip-support' );
 			?>
-			<em id="vip-support-email-status" class="vip-support-email-status email-verified"><span class="dashicons dashicons-yes"></span><?php echo $message; ?></em>
+			<em id="vip-support-email-status" class="vip-support-email-status email-verified"><span class="dashicons dashicons-yes"></span>
+				<?php esc_html_e( 'email is verified', 'vip-support' ); ?>
+			</em>
 			<?php
 		} else {
-			$message = __( 'email is not verified', 'vip-support' );
 			?>
-			<em id="vip-support-email-status" class="vip-support-email-status email-not-verified"><span class="dashicons dashicons-no"></span><?php echo $message; ?></em>
+			<em id="vip-support-email-status" class="vip-support-email-status email-not-verified"><span class="dashicons dashicons-no"></span>
+				<?php esc_html_e( 'email is not verified', 'vip-support' ); ?>
+			</em>
 			<?php
 		}
 ?>
