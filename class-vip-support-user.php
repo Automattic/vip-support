@@ -349,11 +349,11 @@ class VipSupportUser {
 			return $location;
 		}
 		if ( $this->message_replace ) {
-			$location = add_query_arg( array( 'update' => $this->message_replace ), $location );
+			$location = add_query_arg( array( 'update' => rawurlencode( $this->message_replace ) ), $location );
 			$location = esc_url_raw( $location );
 		}
 		if ( $this->registering_a12n ) {
-			$location = add_query_arg( array( 'update' => self::MSG_MADE_VIP ), $location );
+			$location = add_query_arg( array( 'update' => rawurlencode( self::MSG_MADE_VIP ) ), $location );
 			$location = esc_url_raw( $location );
 		}
 		return $location;
