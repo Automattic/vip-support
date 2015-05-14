@@ -6,6 +6,14 @@
 # http://www.peterbe.com/plog/set-ex
 set -ex
 
+# Install unit tests
+# ==================
+
+bash bin/install-wp-tests.sh wordpress_test wordpress password localhost "${WP_VERSION}"
+
+# Install Behat tests
+# ===================
+
 composer self-update
 
 echo 'date.timezone = "Europe/London"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
@@ -16,11 +24,6 @@ mkdir -p $WORDPRESS_FAKE_MAIL_DIR
 sudo service mysql restart
 mysql -e 'CREATE DATABASE wordpress;' -uroot
 mysql -e 'GRANT ALL PRIVILEGES ON wordpress.* TO "wordpress"@"localhost" IDENTIFIED BY "password"' -uroot
-mysql -e 'CREATE DATABASE wordpress_test;' -uroot
-mysql -e 'GRANT ALL PRIVILEGES ON wordpress_test.* TO "wordpress"@"localhost" IDENTIFIED BY "password"' -uroot
-
-# Install unit tests
-bash bin/install-wp-tests.sh wordpress_test wordpress password localhost "${WP_VERSION}"
 
 exit 0
 
