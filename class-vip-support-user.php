@@ -406,6 +406,10 @@ class VipSupportUser {
 			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
 		}
 
+		if ( $this->is_a8c_email( $user->user_email ) ) {
+			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
+		}
+
 		$stored_verification_code = (string) get_user_meta( $user_id, self::META_VERIFICATION_CODE, true );
 		$hash_sent                = (string) sanitize_text_field( $_GET[self::GET_EMAIL_VERIFY] );
 
