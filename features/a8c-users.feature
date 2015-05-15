@@ -39,6 +39,20 @@ Feature: Automattic users are in the VIP Support Role
     Then I should see "This user’s Automattic email address is not verified"
     And I am on "/wp-admin/users.php?role=vip_support"
     Then I should not see "actual_a8c_user"
+    
+  @javascript @insulated
+  Scenario: Automattic users editing their profile do not receive unrequested verification emails
+    Given I am logged in as "actual_a8c_user" with the password "password" and I am on "/wp-admin/profile.php"
+    And I clear the email inbox
+    And I fill in "First Name" with "Some name"
+    And I press "Update Profile"
+    Then I should not see an email to another@automattic.com
+
+  @javascript @insulated
+  Scenario: Unverified Automattic users can request a verification email
+    Given I am logged in as "actual_a8c_user" with the password "password" and I am on "/wp-admin/profile.php"
+    And I follow "re-send verification email"
+    Then the latest email to actual_a8c_user@automattic.com should match "Email verification for WordPress Default"
 
   @javascript @insulated
   Scenario: Following the verification link in the email verifies the user's email successfully
@@ -114,7 +128,7 @@ Feature: Automattic users are in the VIP Support Role
     And I should see "Only users with a recognised Automattic email address can be assigned the VIP Support role."
     When I am on "/wp-admin/users.php?role=vip_support"
     Then I should not see "random_user"
-    
+
   @javascript @insulated
   Scenario: Adding a subscriber user for the next test
     Given I am logged in as "admin" with the password "password" and I am on "/wp-admin/user-new.php"
