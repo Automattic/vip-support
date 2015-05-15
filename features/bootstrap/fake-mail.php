@@ -74,6 +74,6 @@ function a8c_vip_get_fake_mail_for( $email_address ) {
  */
 function a8c_vip_delete_fake_mail_for( $email_address = '' ) {
 	foreach ( glob( WORDPRESS_FAKE_MAIL_DIR . '*' . $email_address . '*' ) as $email ) {
-		unset( $email );
+		unlink( $email );
 	}
 }
