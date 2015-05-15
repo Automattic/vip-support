@@ -78,8 +78,15 @@ class FeatureContext extends MinkContext {
 			throw new \Behat\Mink\Exception\ExpectationException($exception_message, $this->getSession());
 		}
 		$message = a8c_vip_read_fake_mail( array_pop( $emails ) );
+		$matched_regex = false;
+		if ( preg_match("/$regex/", $message['subject']) ) {
+			$matched_regex = true;
+		}
 		if ( preg_match("/$regex/", $message['body']) ) {
-			return;
+			$matched_regex = true;
+		}
+
+		if ( ! $matched_regex ) {
 			$exception_message = sprintf( 'Did not find an email to %s which matched "%s"', $email_address, $pattern );
 			throw new \Behat\Mink\Exception\ExpectationException($exception_message, $this->getSession());
 		}
