@@ -73,6 +73,10 @@ class FeatureContext extends MinkContext {
 		require_once( __DIR__ . '/fake-mail.php' );
 		$regex = $this->fixStepArgument($pattern);
 		$emails = a8c_vip_get_fake_mail_for( $email_address );
+		if ( empty( $emails ) ) {
+			$exception_message = sprintf( 'Did not find any emails to %s', $email_address );
+			throw new \Behat\Mink\Exception\ExpectationException($exception_message, $this->getSession());
+		}
 		$message = a8c_vip_read_fake_mail( array_pop( $emails ) );
 		if ( preg_match("/$regex/", $message['body']) ) {
 			return;
