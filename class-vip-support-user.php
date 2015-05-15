@@ -407,7 +407,7 @@ class VipSupportUser {
 		}
 
 		$stored_verification_code = (string) get_user_meta( $user_id, self::META_VERIFICATION_CODE, true );
-		$hash_sent                = (string) $_GET[self::GET_EMAIL_VERIFY];
+		$hash_sent                = (string) sanitize_text_field( $_GET[self::GET_EMAIL_VERIFY] );
 
 		// The hash sent in the email verification link is composed of the user ID, a verification code
 		// generated and stored when the email was sent (a random string), and the user email. The idea
