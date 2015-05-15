@@ -52,7 +52,7 @@
   Scenario: Unverified Automattic users can request a verification email
     Given I am logged in as "actual_a8c_user" with the password "password" and I am on "/wp-admin/profile.php"
     And I follow "re-send verification email"
-    Then the latest email to actual_a8c_user@automattic.com should match "Email verification for WordPress Default"
+    Then the latest email to actual_a8c_user@automattic.com should match "You need to verify your Automattic email address for your user on"
 
   @javascript @insulated
   Scenario: Following the verification link in the email verifies the user's email successfully
