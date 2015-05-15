@@ -40,9 +40,9 @@ function a8c_vip_read_fake_mail( $file ) {
 	$message = array();
 	$file_contents = file_get_contents( $file );
 	preg_match( '/^TO:(.*)$/mi', $file_contents, $to_matches );
-	$message['to'] = array( trim( $to_matches[1] ) );
+	$message['to'] = trim( $to_matches[1] );
 	preg_match( '/^SUBJECT:(.*)$/mi', $file_contents, $subj_matches );
-	$message['subject'] = array( trim( $subj_matches[1] ) );
+	$message['subject'] = trim( $subj_matches[1] );
 	$parts = explode( WORDPRESS_FAKE_MAIL_DIVIDER, $file_contents );
 	$message['body'] = $parts[1];
 	return $message;
