@@ -25,8 +25,6 @@ sudo service mysql restart
 mysql -e 'CREATE DATABASE wordpress;' -uroot
 mysql -e 'GRANT ALL PRIVILEGES ON wordpress.* TO "wordpress"@"localhost" IDENTIFIED BY "password"' -uroot
 
-exit 0
-
 # http://docs.travis-ci.com/user/languages/php/#Apache-%2B-PHP
 
 sudo apt-get install apache2 libapache2-mod-fastcgi
