@@ -61,8 +61,8 @@ class FeatureContext extends MinkContext {
 		$request_uri = parse_url( $session->getCurrentUrl(), PHP_URL_PATH );
 
 		if (!preg_match($regex, $request_uri)) {
-			$message = sprintf('Current request URI "%s" does not match the regex "%s".', $request_uri, $regex);
-			throw new ExpectationException($message, $session);
+			$exception_message = sprintf('Current request URI "%s" does not match the regex "%s".', $request_uri, $regex);
+			throw new ExpectationException($exception_message, $session);
 		}
 	}
 
@@ -76,9 +76,9 @@ class FeatureContext extends MinkContext {
 		$message = a8c_vip_read_fake_mail( array_pop( $emails ) );
 		if ( preg_match("/$regex/", $message['body']) ) {
 			return;
+			$exception_message = sprintf( 'Did not find an email to %s which matched "%s"', $email_address, $pattern );
+			throw new \Behat\Mink\Exception\ExpectationException($exception_message, $this->getSession());
 		}
-		$message = sprintf( 'Did not find an email to %s which matched "%s" – ', $email_address, $pattern );
-		throw new \Behat\Mink\Exception\ExpectationException($message, $this->getSession());
 	}
 
 	/**
@@ -101,8 +101,8 @@ class FeatureContext extends MinkContext {
 		// Our array is zero indexed
 		$i--;
 		if ( ! isset( $links[$i] ) ) {
-			$message = sprintf( 'Could not find a %s link amongst: %s', $ordinal, implode( ', ', $links ) );
-			throw new \Behat\Mink\Exception\ExpectationException($message, $this->getSession());
+			$exception_message = sprintf( 'Could not find a %s link amongst: %s', $ordinal, implode( ', ', $links ) );
+			throw new \Behat\Mink\Exception\ExpectationException($exception_message, $this->getSession());
 		}
 //		throw new \Behat\Mink\Exception\ExpectationException($links[$i], $this->getSession());
 		$this->getSession()->visit($links[$i]);
