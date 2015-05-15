@@ -76,6 +76,16 @@ Feature: Automattic users are in the VIP Support Role
     And I should see "General Settings"
 
   @javascript @insulated
+  Scenario: A8c users with verified email lose verified status if they change their email address
+    Given I am logged in as "actual_a8c_user" with the password "password" and I am on "/wp-admin/profile.php"
+    And I fill in "E-mail" with "actual_a8c_user_new@automattic.com"
+    And I press "Update Profile"
+    Then I should see "email is not verified"
+    And I fill in "E-mail" with "actual_a8c_user@automattic.com"
+    And I press "Update Profile"
+    Then I should see "email is not verified"
+
+  @javascript @insulated
   Scenario: New non-A8c users cannot be assigned the VIP Support role
     Given I am logged in as "admin" with the password "password" and I am on "/wp-admin/user-new.php"
     Then I should see "Add New User"
