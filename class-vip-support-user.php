@@ -393,17 +393,18 @@ class VipSupportUser {
 		if ( ! $user ) {
 			return;
 		}
+
+		$rebuffal_title   = __( 'Verification failed', 'vip-support' );
+		$rebuffal_message = __( 'This email verification link is not for your account, was not recognised, has been invalidated, or has already been used.', 'vip-support' );
+
 		// We only want the user who was sent the email to be able to verify their email
 		// (i.e. not another logged in or anonymous user clicking the link).
 		// @FIXME: Should we expire the link at this point, so an attacker cannot iterate the IDs?
 		if ( get_current_user_id() != $user_id ) {
-			$message = __( 'This email verification link was not created for your user. Please log in as the user in the email sent to you, and then click the link again.', 'vip-support' );
-			$title = __( 'Verification failed', 'vip-support' );
 			// 403 Forbidden – The server understood the request, but is refusing to fulfill it.
 			// Authorization will not help and the request SHOULD NOT be repeated.
-			wp_die( $message, $title, array( 'response' => 403 ) );
+			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
 		}
-
 
 		$stored_verification_code = (string) get_user_meta( $user_id, self::META_VERIFICATION_CODE, true );
 		$hash_sent                = (string) $_GET[self::GET_EMAIL_VERIFY];
@@ -416,11 +417,7 @@ class VipSupportUser {
 		$check_hash = wp_hash( get_current_user_id() . $stored_verification_code . $user->user_email );
 
 		if ( $check_hash !== $hash_sent ) {
-			$message = __( 'This email verification link was not recognised, has been invalidated, or has already been used.', 'vip-support' );
-			$title = __( 'Verification failed', 'vip-support' );
-			// 403 Forbidden – The server understood the request, but is refusing to fulfill it.
-			// Authorization will not help and the request SHOULD NOT be repeated.
-			wp_die( $message, $title, array( 'response' => 403 ) );
+			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
 		}
 
 		// It's all looking good. Verify the email.
