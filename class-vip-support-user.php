@@ -244,7 +244,7 @@ class VipSupportUser {
 					$error_html = __( 'VIP Support users can only be assigned the VIP Support role, or deleted.', 'vip-support' );
 					break;
 				default:
-					return;
+					break;
 			}
 		}
 
