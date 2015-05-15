@@ -119,7 +119,6 @@ class VipSupportUser {
 		add_action( 'load-user-edit.php', array( $this, 'action_load_user_edit' ) );
 		add_action( 'load-profile.php',   array( $this, 'action_load_profile' ) );
 		add_action( 'admin_head',         array( $this, 'action_admin_head' ) );
-		add_action( 'profile_update',     array( $this, 'action_profile_update' ) );
 
 		add_filter( 'wp_redirect',          array( $this, 'filter_wp_redirect' ) );
 		add_filter( 'removable_query_args', array( $this, 'filter_removable_query_args' ) );
@@ -377,23 +376,6 @@ class VipSupportUser {
 			if ( self::MSG_BLOCK_UPGRADE_NON_A12N == $this->message_replace ) {
 				$this->message_replace = self::MSG_BLOCK_NEW_NON_VIP_USER;
 			}
-		}
-	}
-
-	/**
-	 * Hooks the profile_update action to send the verification email if
-	 * we've not verified this email.
-	 *
-	 * @param int $user_id The ID of the user whose profile was just updated
-	 */
-	public function action_profile_update( $user_id ) {
-		$user = new WP_User( $user_id );
-		if ( ! $this->is_a8c_email( $user->user_email ) ) {
-			return;
-		}
-		$verified_email = get_user_meta( $user_id, self::META_EMAIL_VERIFIED, true );
-		if ( $user->user_email != $verified_email ) {
-			$this->send_verification_email( $user_id );
 		}
 	}
 
