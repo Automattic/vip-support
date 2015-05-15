@@ -109,4 +109,29 @@ class FeatureContext extends MinkContext {
 
 	}
 
+	/**
+	 * @Given /^I should not see an email to ([^ ]+@[^ ]+)$/
+	 */
+	public function assertNoEmailTo( $email_address ) {
+		require_once( __DIR__ . '/fake-mail.php' );
+		$emails = a8c_vip_get_fake_mail_for( $email_address );
+		if ( ! empty( $emails ) ) {
+			$message = a8c_vip_read_fake_mail( array_pop( $emails ) );
+			$exception_message = sprintf( 'There should be no email to %s, but at least one was found the first had the subject: %s', $email_address, $message['subject'] );
+			throw new \Behat\Mink\Exception\ExpectationException($exception_message, $this->getSession());
+		}
+	}
+
+	/**
+	 * @Then /^I clear the email inbox( for ([^ ]+@[^ ]+))?$/
+	 */
+	public function clearInbox( $specific = false, $email_address = '' ) {
+		require_once( __DIR__ . '/fake-mail.php' );
+		$specific = (bool) $specific;
+		if ( ! $specific ) {
+			a8c_vip_delete_fake_mail_for();
+		} else {
+			a8c_vip_delete_fake_mail_for( $email_address );
+		}
+	}
 }
