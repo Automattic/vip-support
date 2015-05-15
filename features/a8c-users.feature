@@ -1,4 +1,4 @@
-Feature: Automattic users are in the VIP Support Role
+  Feature: Automattic users are in the VIP Support Role
   As a site owner
   In order to distinguish support users
   I must clearly see who is an VIP Support user
@@ -39,7 +39,7 @@ Feature: Automattic users are in the VIP Support Role
     Then I should see "This user’s Automattic email address is not verified"
     And I am on "/wp-admin/users.php?role=vip_support"
     Then I should not see "actual_a8c_user"
-    
+
   @javascript @insulated
   Scenario: Automattic users editing their profile do not receive unrequested verification emails
     Given I am logged in as "actual_a8c_user" with the password "password" and I am on "/wp-admin/profile.php"
