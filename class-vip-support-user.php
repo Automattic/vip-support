@@ -118,6 +118,7 @@ class VipSupportUser {
 		add_action( 'personal_options',   array( $this, 'action_personal_options' ) );
 		add_action( 'load-user-edit.php', array( $this, 'action_load_user_edit' ) );
 		add_action( 'load-profile.php',   array( $this, 'action_load_profile' ) );
+		add_action( 'profile_update',     array( $this, 'action_profile_update' ) );
 		add_action( 'admin_head',         array( $this, 'action_admin_head' ) );
 
 		add_filter( 'wp_redirect',          array( $this, 'filter_wp_redirect' ) );
@@ -447,6 +448,20 @@ class VipSupportUser {
 	public function filter_removable_query_args( $args ) {
 		$args[] = self::GET_TRIGGER_RESEND_VERIFICATION;
 		return $args;
+	}
+
+	/**
+	 * Hooks the profile_update action to delete the email verification meta
+	 * when the user's email address changes.
+	 *
+	 * @param int $user_id The ID of the user whose profile was just updated
+	 */
+	public function action_profile_update( $user_id ) {
+		$user = new WP_User( $user_id );
+		$verified_email = get_user_meta( $user_id, self::META_EMAIL_VERIFIED, true );
+		if ( $user->user_email != $verified_email ) {
+			delete_user_meta( $user_id, self::META_EMAIL_VERIFIED );
+		}
 	}
 
 	// UTILITIES
