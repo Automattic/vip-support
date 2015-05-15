@@ -31,7 +31,7 @@ Feature: Automattic users are in the VIP Support Role
     And I should not see "actual_a8c_user"
 
   @javascript @insulated
-  Scenario: Trying to assign A8c users to the VIP Support role fails and shows an error
+  Scenario: Trying to assign unverified A8c users to the VIP Support role fails and shows an error
     Given I am logged in as "admin" with the password "password" and I am on "/wp-admin/users.php?s=actual_a8c_user"
     And I follow "actual_a8c_user"
     And I select "VIP Support" from "Role"
