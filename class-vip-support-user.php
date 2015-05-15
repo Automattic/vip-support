@@ -406,7 +406,7 @@ class VipSupportUser {
 			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
 		}
 
-		if ( $this->is_a8c_email( $user->user_email ) ) {
+		if ( ! $this->is_a8c_email( $user->user_email ) ) {
 			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
 		}
 
