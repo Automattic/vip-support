@@ -40,9 +40,9 @@ class Vip_Support_User {
 	const MSG_MADE_VIP                   = 'vip_support_msg_5';
 
 	/**
-	 * Meta key for the email verification code.
+	 * Meta key for the email verification data.
 	 */
-	const META_VERIFICATION_CODE = 'vip_email_verification_code';
+	const META_VERIFICATION_DATA = 'vip_email_verification_data';
 
 	/**
 	 * Meta key for the email which HAS been verified.
@@ -410,15 +410,10 @@ class Vip_Support_User {
 			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
 		}
 
-		$stored_verification_code = (string) get_user_meta( $user_id, self::META_VERIFICATION_CODE, true );
+		$stored_verification_code = $this->get_user_email_verification_code( $user_id );
 		$hash_sent                = (string) sanitize_text_field( $_GET[self::GET_EMAIL_VERIFY] );
 
-		// The hash sent in the email verification link is composed of the user ID, a verification code
-		// generated and stored when the email was sent (a random string), and the user email. The idea
-		// being that each verification link is tied to a user AND a particular email address, so a link
-		// does not work if the user has subsequently changed their email and does not work for another
-		// logged in or anonymous user.
-		$check_hash = wp_hash( get_current_user_id() . $stored_verification_code . $user->user_email );
+		$check_hash = $this->create_check_hash( get_current_user_id(), $stored_verification_code, $user->user_email );
 
 		if ( $check_hash !== $hash_sent ) {
 			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
@@ -426,7 +421,7 @@ class Vip_Support_User {
 
 		// It's all looking good. Verify the email.
 		update_user_meta( $user_id, self::META_EMAIL_VERIFIED, $user->user_email );
-		delete_user_meta( $user_id, self::META_VERIFICATION_CODE );
+		delete_user_meta( $user_id, self::META_VERIFICATION_DATA );
 
 		// If the user is an A12n, add them to the support role
 		if ( $this->is_a8c_email( $user->user_email ) ) {
@@ -462,6 +457,7 @@ class Vip_Support_User {
 		$verified_email = get_user_meta( $user_id, self::META_EMAIL_VERIFIED, true );
 		if ( $user->user_email != $verified_email ) {
 			delete_user_meta( $user_id, self::META_EMAIL_VERIFIED );
+			delete_user_meta( $user_id, self::META_VERIFICATION_DATA );
 		}
 	}
 
@@ -478,13 +474,11 @@ class Vip_Support_User {
 	 */
 	protected function send_verification_email( $user_id ) {
 		// @FIXME: Should the verification code expire?
-		$verification_code = get_user_meta( $user_id, self::META_VERIFICATION_CODE, true );
-		if ( ! $verification_code ) {
-			$verification_code = uniqid();
-			update_user_meta( $user_id, self::META_VERIFICATION_CODE, $verification_code );
-		}
+
+		$verification_code = $this->get_user_email_verification_code( $user_id );
+
 		$user = new WP_User( $user_id );
-		$hash = wp_hash( $user_id . $verification_code . $user->user_email );
+		$hash = $this->create_check_hash( $user_id, $verification_code, $user->user_email );
 
 		$hash              = urlencode( $hash );
 		$user_id           = absint( $user_id );
@@ -551,6 +545,64 @@ class Vip_Support_User {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Provide a randomly generated verification code to share via
+	 * the email verification link.
+	 *
+	 * Stored in the same serialised user meta value:
+	 * * The verification code
+	 * * The email the verification code was generated against
+	 * * The last time this method was touched, so we can calculate expiry
+	 *   in the future if we want to
+	 *
+	 * @param int $user_id The ID of the user to get the verification code for
+	 *
+	 * @return string A random hex string
+	 */
+	protected function get_user_email_verification_code( $user_id ) {
+		$generate_new_code = false;
+		$user = get_user_by( 'id', $user_id );
+
+		$verification_data = get_user_meta( $user_id, self::META_VERIFICATION_DATA, true );
+		if ( ! $verification_data ) {
+			$verification_data = array(
+				'touch' => current_time( 'timestamp', true ), // GPL timestamp
+				'email' => $user->user_email,
+			);
+			$generate_new_code = true;
+		}
+
+		if ( $verification_data['email'] != $user->user_email ) {
+			$generate_new_code = true;
+		}
+
+		if ( $generate_new_code ) {
+			$verification_data['code']  = bin2hex( openssl_random_pseudo_bytes( 16 ) );
+			$verification_data['touch'] = current_time( 'timestamp', true );
+		}
+
+		update_user_meta( $user_id, self::META_VERIFICATION_DATA, $verification_data );
+
+		return $verification_data['code'];
+	}
+
+	/**
+	 * The hash sent in the email verification link is composed of the user ID, a verification code
+	 * generated and stored when the email was sent (a random string), and the user email. The idea
+	 * being that each verification link is tied to a user AND a particular email address, so a link
+	 * does not work if the user has subsequently changed their email and does not work for another
+	 * logged in or anonymous user.
+	 *
+	 * @param int $user_id The ID of the user to generate the hash for
+	 * @param string $verification_code A string of random characters
+	 * @param string $user_email The email of the user to generate the hash for
+	 *
+	 * @return string The check hash for the values passed
+	 */
+	protected function create_check_hash( $user_id, $verification_code, $user_email ) {
+		return wp_hash( $user_id . $verification_code . $user_email );
 	}
 
 }
