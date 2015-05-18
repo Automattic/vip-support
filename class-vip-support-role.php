@@ -5,7 +5,7 @@
  *
  * @package VipSupportRole
  **/
-class VipSupportRole {
+class Vip_Support_Role {
 
 	const VIP_SUPPORT_ROLE = 'vip_support';
 
@@ -21,13 +21,13 @@ class VipSupportRole {
 	 *
 	 * @access @static
 	 *
-	 * @return VipSupportRole object The instance of VipRole
+	 * @return Vip_Support_Role object The instance of VipRole
 	 */
 	static public function init() {
 		static $instance = false;
 
 		if ( ! $instance ) {
-			$instance = new VipSupportRole;
+			$instance = new Vip_Support_Role;
 		}
 
 		return $instance;
@@ -132,4 +132,4 @@ class VipSupportRole {
 	}
 }
 
-VipSupportRole::init();
+Vip_Support_Role::init();

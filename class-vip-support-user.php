@@ -5,7 +5,7 @@
  *
  * @package VipSupportUser
  **/
-class VipSupportUser {
+class Vip_Support_User {
 
 	/**
 	 * GET parameter for a message: We blocked this user from the
@@ -93,13 +93,13 @@ class VipSupportUser {
 	 *
 	 * @access @static
 	 *
-	 * @return VipSupportRole object The instance of VipRole
+	 * @return Vip_Support_Role object The instance of VipRole
 	 */
 	static public function init() {
 		static $instance = false;
 
 		if ( ! $instance ) {
-			$instance = new VipSupportUser;
+			$instance = new Vip_Support_User;
 		}
 
 		return $instance;
@@ -305,8 +305,8 @@ class VipSupportUser {
 		$user = new WP_User( $user_id );
 
 		// Try to make the conditional checks clearer
-		$becoming_support         = ( VipSupportRole::VIP_SUPPORT_ROLE == $role );
-		$leaving_support          = ( in_array( VipSupportRole::VIP_SUPPORT_ROLE, $old_roles ) && ! $becoming_support );
+		$becoming_support         = ( Vip_Support_Role::VIP_SUPPORT_ROLE == $role );
+		$leaving_support          = ( in_array( Vip_Support_Role::VIP_SUPPORT_ROLE, $old_roles ) && ! $becoming_support );
 		$valid_and_verified_email = ( $this->is_a8c_email( $user->user_email ) && $this->user_has_verified_email( $user_id ) );
 
 		if ( $becoming_support && ! $valid_and_verified_email ) {
@@ -328,7 +328,7 @@ class VipSupportUser {
 
 		if ( $leaving_support && $this->is_a8c_email( $user->user_email ) ) {
 			$this->reverting_role = true;
-			$user->set_role( VipSupportRole::VIP_SUPPORT_ROLE );
+			$user->set_role( Vip_Support_Role::VIP_SUPPORT_ROLE );
 			$this->message_replace = self::MSG_BLOCK_DOWNGRADE;
 			$this->reverting_role = false;
 		}
@@ -369,7 +369,7 @@ class VipSupportUser {
 	public function action_user_register( $user_id ) {
 		$user = new WP_User( $user_id );
 		if ( $this->is_a8c_email( $user->user_email ) ) {
-			$user->set_role( VipSupportRole::VIP_SUPPORT_ROLE );
+			$user->set_role( Vip_Support_Role::VIP_SUPPORT_ROLE );
 			$this->registering_a12n = true;
 			update_user_meta( $user_id, self::META_EMAIL_VERIFIED, false );
 			$this->send_verification_email( $user_id );
@@ -555,4 +555,4 @@ class VipSupportUser {
 
 }
 
-VipSupportUser::init();
+Vip_Support_User::init();
