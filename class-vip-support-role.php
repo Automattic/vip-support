@@ -3,7 +3,7 @@
 /**
  * Provides the VIP Support role
  *
- * @package VipSupportRole
+ * @package Vip_Support_Role
  **/
 class Vip_Support_Role {
 
@@ -21,7 +21,7 @@ class Vip_Support_Role {
 	 *
 	 * @access @static
 	 *
-	 * @return Vip_Support_Role object The instance of VipRole
+	 * @return Vip_Support_Role object The instance of Vip_Support_Role
 	 */
 	static public function init() {
 		static $instance = false;

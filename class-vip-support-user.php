@@ -89,11 +89,11 @@ class Vip_Support_User {
 
 	/**
 	 * Initiate an instance of this class if one doesn't
-	 * exist already. Return the VipSupportRole instance.
+	 * exist already. Return the Vip_Support_User instance.
 	 *
 	 * @access @static
 	 *
-	 * @return Vip_Support_Role object The instance of VipRole
+	 * @return Vip_Support_User object The instance of Vip_Support_User
 	 */
 	static public function init() {
 		static $instance = false;
@@ -430,7 +430,7 @@ class Vip_Support_User {
 
 		// If the user is an A12n, add them to the support role
 		if ( $this->is_a8c_email( $user->user_email ) ) {
-			$user->set_role( VipSupportRole::VIP_SUPPORT_ROLE );
+			$user->set_role( Vip_Support_Role::VIP_SUPPORT_ROLE );
 		}
 
 		$message = sprintf( __( 'Your email has been verified as %s', 'vip-support' ), $user->user_email );
