@@ -455,6 +455,9 @@ class Vip_Support_User {
 	public function action_profile_update( $user_id ) {
 		$user = new WP_User( $user_id );
 		$verified_email = get_user_meta( $user_id, self::META_EMAIL_VERIFIED, true );
+		if ( $user->has_cap( Vip_Support_Role::VIP_SUPPORT_ROLE ) ) {
+			$user->set_role( 'subscriber' );
+		}
 		if ( $user->user_email != $verified_email ) {
 			delete_user_meta( $user_id, self::META_EMAIL_VERIFIED );
 			delete_user_meta( $user_id, self::META_VERIFICATION_DATA );
