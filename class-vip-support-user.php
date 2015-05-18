@@ -326,7 +326,7 @@ class Vip_Support_User {
 		}
 
 
-		if ( $leaving_support && $this->is_a8c_email( $user->user_email ) ) {
+		if ( $leaving_support && $this->is_a8c_email( $user->user_email ) && $valid_and_verified_email ) {
 			$this->reverting_role = true;
 			$user->set_role( Vip_Support_Role::VIP_SUPPORT_ROLE );
 			$this->message_replace = self::MSG_BLOCK_DOWNGRADE;
