@@ -57,7 +57,7 @@ class Vip_Support_User {
 	/**
 	 * GET parameter for the user ID for the user being verified.
 	 */
-	const GET_EMAIL_USER_ID               = 'vip_user_id';
+	const GET_EMAIL_USER_LOGIN               = 'vip_user_login';
 
 	/**
 	 * GET parameter to indicate to trigger a resend if true.
@@ -388,21 +388,21 @@ class Vip_Support_User {
 			return;
 		}
 
-		$user_id = absint( $_GET[self::GET_EMAIL_USER_ID] );
-		$user = get_user_by( 'id', $user_id );
-		if ( ! $user ) {
-			return;
-		}
-
 		$rebuffal_title   = __( 'Verification failed', 'vip-support' );
 		$rebuffal_message = __( 'This email verification link is not for your account, was not recognised, has been invalidated, or has already been used.', 'vip-support' );
+
+		$user_login = $_GET[self::GET_EMAIL_USER_LOGIN];
+		$user = get_user_by( 'login', $user_login );
+		if ( ! $user ) {
+			// 403 Forbidden – The server understood the request, but is refusing to fulfill it.
+			// Authorization will not help and the request SHOULD NOT be repeated.
+			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
+		}
 
 		// We only want the user who was sent the email to be able to verify their email
 		// (i.e. not another logged in or anonymous user clicking the link).
 		// @FIXME: Should we expire the link at this point, so an attacker cannot iterate the IDs?
-		if ( get_current_user_id() != $user_id ) {
-			// 403 Forbidden – The server understood the request, but is refusing to fulfill it.
-			// Authorization will not help and the request SHOULD NOT be repeated.
+		if ( get_current_user_id() != $user->ID ) {
 			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
 		}
 
@@ -410,7 +410,7 @@ class Vip_Support_User {
 			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
 		}
 
-		$stored_verification_code = $this->get_user_email_verification_code( $user_id );
+		$stored_verification_code = $this->get_user_email_verification_code( $user->ID );
 		$hash_sent                = (string) sanitize_text_field( $_GET[self::GET_EMAIL_VERIFY] );
 
 		$check_hash = $this->create_check_hash( get_current_user_id(), $stored_verification_code, $user->user_email );
@@ -420,8 +420,8 @@ class Vip_Support_User {
 		}
 
 		// It's all looking good. Verify the email.
-		update_user_meta( $user_id, self::META_EMAIL_VERIFIED, $user->user_email );
-		delete_user_meta( $user_id, self::META_VERIFICATION_DATA );
+		update_user_meta( $user->ID, self::META_EMAIL_VERIFIED, $user->user_email );
+		delete_user_meta( $user->ID, self::META_VERIFICATION_DATA );
 
 		// If the user is an A12n, add them to the support role
 		if ( $this->is_a8c_email( $user->user_email ) ) {
@@ -482,7 +482,7 @@ class Vip_Support_User {
 
 		$hash              = urlencode( $hash );
 		$user_id           = absint( $user_id );
-		$verification_link = add_query_arg( array( self::GET_EMAIL_VERIFY => urlencode( $hash ), self::GET_EMAIL_USER_ID => urlencode( $user_id ) ), home_url() );
+		$verification_link = add_query_arg( array( self::GET_EMAIL_VERIFY => urlencode( $hash ), self::GET_EMAIL_USER_LOGIN => urlencode( $user->user_login ) ), home_url() );
 
 		$user = new WP_User( $user_id );
 
