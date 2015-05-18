@@ -531,7 +531,7 @@ class Vip_Support_User {
 	 *
 	 * @return bool True if the string is an email with an A8c domain
 	 */
-	protected function is_a8c_email( $email ) {
+	public function is_a8c_email( $email ) {
 		if ( ! is_email( $email ) ) {
 			return false;
 		}
