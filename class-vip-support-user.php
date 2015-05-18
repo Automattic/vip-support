@@ -488,7 +488,7 @@ class Vip_Support_User {
 
 		$hash              = urlencode( $hash );
 		$user_id           = absint( $user_id );
-		$verification_link = add_query_arg( array( self::GET_EMAIL_VERIFY => $hash, self::GET_EMAIL_USER_ID => $user_id ), home_url() );
+		$verification_link = add_query_arg( array( self::GET_EMAIL_VERIFY => urlencode( $hash ), self::GET_EMAIL_USER_ID => urlencode( $user_id ) ), home_url() );
 
 		$user = new WP_User( $user_id );
 
@@ -496,7 +496,7 @@ class Vip_Support_User {
 		$message .= PHP_EOL . PHP_EOL;
 		$message .= sprintf( __( 'You need to verify your Automattic email address for your user on %1$s (%2$s). If you are expecting this, please click the link below to verify your email address:', 'vip-support' ), get_bloginfo( 'name' ), home_url() );
 		$message .= PHP_EOL;
-		$message .= $verification_link;
+		$message .= esc_url( $verification_link );
 		$message .= PHP_EOL . PHP_EOL;
 		$message .= __( 'If you have any questions, please contact the WordPress.com VIP Support Team.' );
 
