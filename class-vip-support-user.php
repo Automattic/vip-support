@@ -3,9 +3,9 @@
 /**
  * Manages VIP Support users.
  *
- * @package VipSupportUser
+ * @package WPCOM_VIP_Support_User
  **/
-class Vip_Support_User {
+class WPCOM_VIP_Support_User {
 
 	/**
 	 * GET parameter for a message: We blocked this user from the
@@ -89,17 +89,17 @@ class Vip_Support_User {
 
 	/**
 	 * Initiate an instance of this class if one doesn't
-	 * exist already. Return the Vip_Support_User instance.
+	 * exist already. Return the WPCOM_VIP_Support_User instance.
 	 *
 	 * @access @static
 	 *
-	 * @return Vip_Support_User object The instance of Vip_Support_User
+	 * @return WPCOM_VIP_Support_User object The instance of WPCOM_VIP_Support_User
 	 */
 	static public function init() {
 		static $instance = false;
 
 		if ( ! $instance ) {
-			$instance = new Vip_Support_User;
+			$instance = new WPCOM_VIP_Support_User;
 		}
 
 		return $instance;
@@ -305,8 +305,8 @@ class Vip_Support_User {
 		$user = new WP_User( $user_id );
 
 		// Try to make the conditional checks clearer
-		$becoming_support         = ( Vip_Support_Role::VIP_SUPPORT_ROLE == $role );
-		$leaving_support          = ( in_array( Vip_Support_Role::VIP_SUPPORT_ROLE, $old_roles ) && ! $becoming_support );
+		$becoming_support         = ( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE == $role );
+		$leaving_support          = ( in_array( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE, $old_roles ) && ! $becoming_support );
 		$valid_and_verified_email = ( $this->is_a8c_email( $user->user_email ) && $this->user_has_verified_email( $user_id ) );
 
 		if ( $becoming_support && ! $valid_and_verified_email ) {
@@ -328,7 +328,7 @@ class Vip_Support_User {
 
 		if ( $leaving_support && $this->is_a8c_email( $user->user_email ) && $valid_and_verified_email ) {
 			$this->reverting_role = true;
-			$user->set_role( Vip_Support_Role::VIP_SUPPORT_ROLE );
+			$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE );
 			$this->message_replace = self::MSG_BLOCK_DOWNGRADE;
 			$this->reverting_role = false;
 		}
@@ -369,7 +369,7 @@ class Vip_Support_User {
 	public function action_user_register( $user_id ) {
 		$user = new WP_User( $user_id );
 		if ( $this->is_a8c_email( $user->user_email ) ) {
-			$user->set_role( Vip_Support_Role::VIP_SUPPORT_ROLE );
+			$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE );
 			$this->registering_a12n = true;
 			update_user_meta( $user_id, self::META_EMAIL_VERIFIED, false );
 			$this->send_verification_email( $user_id );
@@ -425,7 +425,7 @@ class Vip_Support_User {
 
 		// If the user is an A12n, add them to the support role
 		if ( $this->is_a8c_email( $user->user_email ) ) {
-			$user->set_role( Vip_Support_Role::VIP_SUPPORT_ROLE );
+			$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE );
 		}
 
 		$message = sprintf( __( 'Your email has been verified as %s', 'vip-support' ), $user->user_email );
@@ -455,7 +455,7 @@ class Vip_Support_User {
 	public function action_profile_update( $user_id ) {
 		$user = new WP_User( $user_id );
 		$verified_email = get_user_meta( $user_id, self::META_EMAIL_VERIFIED, true );
-		if ( $user->has_cap( Vip_Support_Role::VIP_SUPPORT_ROLE ) ) {
+		if ( $user->has_cap( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE ) ) {
 			$user->set_role( 'subscriber' );
 		}
 		if ( $user->user_email != $verified_email ) {
@@ -610,4 +610,4 @@ class Vip_Support_User {
 
 }
 
-Vip_Support_User::init();
+WPCOM_VIP_Support_User::init();

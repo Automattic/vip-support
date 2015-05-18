@@ -3,9 +3,9 @@
 /**
  * Provides the VIP Support role
  *
- * @package Vip_Support_Role
+ * @package WPCOM_VIP_Support_Role
  **/
-class Vip_Support_Role {
+class WPCOM_VIP_Support_Role {
 
 	const VIP_SUPPORT_ROLE = 'vip_support';
 
@@ -21,13 +21,13 @@ class Vip_Support_Role {
 	 *
 	 * @access @static
 	 *
-	 * @return Vip_Support_Role object The instance of Vip_Support_Role
+	 * @return WPCOM_VIP_Support_Role object The instance of WPCOM_VIP_Support_Role
 	 */
 	static public function init() {
 		static $instance = false;
 
 		if ( ! $instance ) {
-			$instance = new Vip_Support_Role;
+			$instance = new WPCOM_VIP_Support_Role;
 		}
 
 		return $instance;
@@ -132,4 +132,4 @@ class Vip_Support_Role {
 	}
 }
 
-Vip_Support_Role::init();
+WPCOM_VIP_Support_Role::init();

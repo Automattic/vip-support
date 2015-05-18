@@ -23,7 +23,7 @@ class VIPSupportUserTest extends WP_UnitTestCase {
 		);
 
 		foreach ( $a8c_emails as $a8c_email ) {
-			$this->assertTrue( Vip_Support_User::init()->is_a8c_email( $a8c_email ) );
+			$this->assertTrue( WPCOM_VIP_Support_User::init()->is_a8c_email( $a8c_email ) );
 		}
 
 		$non_a8c_emails = array(
@@ -38,9 +38,8 @@ class VIPSupportUserTest extends WP_UnitTestCase {
 		);
 
 		foreach ( $non_a8c_emails as $non_a8c_email ) {
-			$this->assertFalse( Vip_Support_User::init()->is_a8c_email( $non_a8c_email ) );
+			$this->assertFalse( WPCOM_VIP_Support_User::init()->is_a8c_email( $non_a8c_email ) );
 		}
 
 	}
 }
-
