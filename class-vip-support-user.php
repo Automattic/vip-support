@@ -490,7 +490,7 @@ class Vip_Support_User {
 		$message .= PHP_EOL . PHP_EOL;
 		$message .= sprintf( __( 'You need to verify your Automattic email address for your user on %1$s (%2$s). If you are expecting this, please click the link below to verify your email address:', 'vip-support' ), get_bloginfo( 'name' ), home_url() );
 		$message .= PHP_EOL;
-		$message .= esc_url( $verification_link );
+		$message .= esc_url_raw( $verification_link );
 		$message .= PHP_EOL . PHP_EOL;
 		$message .= __( 'If you have any questions, please contact the WordPress.com VIP Support Team.' );
 
