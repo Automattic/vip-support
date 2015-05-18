@@ -55,7 +55,23 @@
     Then the latest email to actual_a8c_user@automattic.com should match "You need to verify your Automattic email address for your user on"
 
   @javascript @insulated
-  Scenario: Following the verification link in the email verifies the user's email successfully
+  Scenario: Following an incorrect verification link does not verify the user's email
+    Given I am logged in as "actual_a8c_user" with the password "password" and I am on "/?vip_verify_code=invalid12345&vip_user_login=actual_a8c_user"
+    Then I should not see "Your email has been verified"
+    When I am logged in as "admin" with the password "password" and I am on "/wp-admin/users.php?role=vip_support"
+    Then I should not see "actual_a8c_user"
+
+  @javascript @insulated
+  Scenario: Following the verification link in the email while logged in as another user does not verify the user's email
+    Given I am logged in as "admin" with the password "password" and I am on "/wp-admin/"
+    And I follow the second URL in the latest email to actual_a8c_user@automattic.com
+    Then I should not see "Your email has been verified as actual_a8c_user@automattic.com"
+    When I am on "/wp-admin/users.php?s=actual_a8c_user"
+    And I follow "actual_a8c_user"
+    Then I should see "This user’s Automattic email address is not verified"
+
+  @javascript @insulated
+  Scenario: Following the verification link in the email while logged in as that user verifies the user's email successfully
     Given I am logged in as "actual_a8c_user" with the password "password" and I am on "/wp-admin/"
     And I follow the second URL in the latest email to actual_a8c_user@automattic.com
     Then I should see "Your email has been verified as actual_a8c_user@automattic.com"
