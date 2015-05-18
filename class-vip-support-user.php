@@ -42,12 +42,12 @@ class Vip_Support_User {
 	/**
 	 * Meta key for the email verification data.
 	 */
-	const META_VERIFICATION_DATA = 'vip_email_verification_data';
+	const META_VERIFICATION_DATA = '_vip_email_verification_data';
 
 	/**
 	 * Meta key for the email which HAS been verified.
 	 */
-	const META_EMAIL_VERIFIED    = 'vip_verified_email';
+	const META_EMAIL_VERIFIED    = '_vip_verified_email';
 
 	/**
 	 * GET parameter for the code in the verification link.
