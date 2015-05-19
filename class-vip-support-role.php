@@ -39,6 +39,7 @@ class Vip_Support_Role {
 	 * and sets some properties.
 	 */
 	public function __construct() {
+		add_action( 'init', array( $this, 'action_init' ) );
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
 		add_filter( 'editable_roles', array( $this, 'filter_editable_roles' ) );
 		add_filter( 'user_has_cap', array( $this, 'filter_user_has_cap' ), 10, 4 );
@@ -46,6 +47,14 @@ class Vip_Support_Role {
 
 	// HOOKS
 	// =====
+
+	/**
+	 * Hooks the init action to add the role, covering the cases
+	 * where we should be using `wpcom_vip_add_role`.
+	 */
+	public function action_init() {
+		$this->add_role();
+	}
 
 	/**
 	 * Hooks the admin_init action to run an update method.
@@ -106,6 +115,14 @@ class Vip_Support_Role {
 
 	}
 
+	protected function add_role() {
+		if ( function_exists( 'wpcom_vip_add_role' ) ) {
+			wpcom_vip_add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), array( 'read' => true ) );
+		} else {
+			add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), array( 'read' => true ) );
+		}
+	}
+
 	/**
 	 * Checks the version option value against the version
 	 * property value, and runs update routines as appropriate.
@@ -119,8 +136,8 @@ class Vip_Support_Role {
 			return;
 		}
 
-		if ( $version < 1 ) {
-			add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), array( 'read' => true ) );
+		if ( $version < 1 && function_exists( 'wpcom_vip_add_role' ) ) {
+			$this->add_role();
 		    $this->error_log( "VIP Support Role: Added VIP Support role " );
 		}
 
