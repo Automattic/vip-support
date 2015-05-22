@@ -20,6 +20,7 @@ before_install:
   - echo $WORDPRESS_FAKE_MAIL_DIR
 
 install:
+  - sudo apt-get update > /dev/null
   - ./ci/prepare.sh
 
 before_script:

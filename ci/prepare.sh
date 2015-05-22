@@ -18,9 +18,6 @@ wait_for_port() {
     done
 }
 
-# General updates
-sudo apt-get update > /dev/null
-
 bash bin/install-wp-tests.sh wordpress_test root '' localhost "${WP_VERSION}"
 
 composer self-update
