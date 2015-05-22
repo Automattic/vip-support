@@ -6,8 +6,8 @@
 # http://www.peterbe.com/plog/set-ex
 set -ex
 
-# Used when waiting for stuff
 NAP_LENGTH=1
+SELENIUM_PORT=4444
 
 # Wait for a specific port to respond to connections.
 wait_for_port() {
