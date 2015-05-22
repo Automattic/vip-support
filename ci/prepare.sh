@@ -6,8 +6,17 @@
 # http://www.peterbe.com/plog/set-ex
 set -ex
 
-# Install unit tests
-# ==================
+# Used when waiting for stuff
+NAP_LENGTH=1
+
+# Wait for a specific port to respond to connections.
+wait_for_port() {
+    local PORT=$1
+    while echo | telnet localhost $PORT 2>&1 | grep -qe 'Connection refused'; do
+        echo "Connection refused on port $PORT. Waiting $NAP_LENGTH seconds..."
+        sleep $NAP_LENGTH
+    done
+}
 
 # General updates
 sudo apt-get update > /dev/null
@@ -20,7 +29,7 @@ echo 'date.timezone = "Europe/London"' >> ~/.phpenv/versions/$(phpenv version-na
 
 mkdir -p $WORDPRESS_FAKE_MAIL_DIR
 
-# Set up the databases
+# Set up the database for WordPress
 sudo service mysql restart
 mysql -e 'CREATE DATABASE wordpress;' -uroot
 mysql -e 'GRANT ALL PRIVILEGES ON wordpress.* TO "wordpress"@"localhost" IDENTIFIED BY "password"' -uroot
