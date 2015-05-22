@@ -83,3 +83,31 @@ cat <<EOT >> $WORDPRESS_SITE_DIR/wp-content/mu-plugins/vip-support-bootstrap.php
 require_once( dirname( __FILE__ ) . '/${WORDPRESS_TEST_SUBJECT}/vip-support.php' );
 
 EOT
+
+# Create virtual display
+export DISPLAY=:99.0
+sh -e /etc/init.d/xvfb start
+
+# Wait for virtual display to initialize (i.e. xdpyinfo returns 0)
+XDPYINFO_EXIT_CODE=1
+# Temporarily stop exiting the whole script if one command fails
+set +e
+while [ $XDPYINFO_EXIT_CODE -ne 0 ] ; do
+        xdpyinfo -display :99.0 &> /dev/null
+        XDPYINFO_EXIT_CODE=$?
+        echo "Waiting on xvfb, xdpyinfo just returned $XDPYINFO_EXIT_CODE"
+        sleep $NAP_LENGTH
+done
+# Resume exiting the whole script if one command fails
+set -e
+
+# Run selenium 2.45.
+wget http://selenium-release.storage.googleapis.com/2.45/selenium-server-standalone-2.45.0.jar
+java -jar selenium-server-standalone-2.45.0.jar -p $SELENIUM_PORT > ~/selenium.log 2>&1 &
+
+# Wait for Selenium, if necessary
+wait_for_port $SELENIUM_PORT
+
+# Wait for Apache, if necessary
+wait_for_port 80
+
