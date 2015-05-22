@@ -19,10 +19,9 @@ before_install:
   - export WP_CLI="${TRAVIS_BUILD_DIR}/vendor/bin/wp"
   - export WORDPRESS_FAKE_MAIL_DIR="$(dirname $TRAVIS_BUILD_DIR)/fake-mail/"
   - echo $WORDPRESS_FAKE_MAIL_DIR
-  - ./ci/prepare.sh
 
 install:
-
+  - ./ci/prepare.sh
 
 before_script:
 
