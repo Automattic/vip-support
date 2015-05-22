@@ -9,10 +9,10 @@ set -ex
 # Install unit tests
 # ==================
 
-bash bin/install-wp-tests.sh wordpress_test root '' localhost "${WP_VERSION}"
+# General updates
+sudo apt-get update > /dev/null
 
-# Install Behat tests
-# ===================
+bash bin/install-wp-tests.sh wordpress_test root '' localhost "${WP_VERSION}"
 
 composer self-update
 
