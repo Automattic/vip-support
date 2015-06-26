@@ -551,6 +551,29 @@ class WPCOM_VIP_Support_User {
 	}
 
 	/**
+	 * Determine if a given user has been validated as an Automattician
+	 *
+	 * Checks their email address as well as their email address verification status
+	 *
+	 * @param int The WP User id to check
+	 * @return bool Boolean indicating if the account is a valid Automattician
+	 */
+	public static function is_valid_automattician( $user_id ) {
+		$user = new WP_User( $user_id );
+
+		if ( ! $user || ! $user->ID ) {
+			return false;
+		}
+
+		$instance = self::init();
+
+		$is_a8c_email 	= $instance->is_a8c_email( $user->user_email );
+		$email_verified = $instance->user_has_verified_email( $user->ID );
+
+		return ( $is_a8c_email && $email_verified );
+	}
+
+	/**
 	 * Provide a randomly generated verification code to share via
 	 * the email verification link.
 	 *
