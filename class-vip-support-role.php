@@ -7,13 +7,21 @@
  **/
 class WPCOM_VIP_Support_Role {
 
+	/**
+	 * The name of the ACTIVE VIP Support role
+	 */
 	const VIP_SUPPORT_ROLE = 'vip_support';
+
+	/**
+	 * The name of the INACTIVE VIP Support role
+	 */
+	const VIP_SUPPORT_INACTIVE_ROLE = 'vip_support_inactive';
 
 	/**
 	 * A version used to determine any necessary
 	 * update routines to be run.
 	 */
-	const VERSION = 1;
+	const VERSION = 2;
 
 	/**
 	 * Initiate an instance of this class if one doesn't
@@ -53,7 +61,8 @@ class WPCOM_VIP_Support_Role {
 	 * where we should be using `wpcom_vip_add_role`.
 	 */
 	public function action_init() {
-		$this->add_role();
+		// @FIXME If we're not using `wpcom_vip_add_role` we don't need to run this on every init
+		$this->add_roles();
 	}
 
 	/**
@@ -79,7 +88,7 @@ class WPCOM_VIP_Support_Role {
 	 * @return array An array of all the user's caps, with the required cap added
 	 */
 	public function filter_user_has_cap( array $user_caps, array $caps, array $args, WP_User $user ) {
-		if ( in_array( self::VIP_SUPPORT_ROLE, $user->roles ) ) {
+		if ( in_array( self::VIP_SUPPORT_ROLE, $user->roles ) && WPCOM_VIP_Support_User::init()->is_verified_automattician( $user->ID ) ) {
 			$user_caps[$args[0]] = true;
 		}
 		return $user_caps;
@@ -94,9 +103,13 @@ class WPCOM_VIP_Support_Role {
 	 * @return array An array of WP role data
 	 */
 	public function filter_editable_roles( array $roles ) {
-		$vip_support_role = array( self::VIP_SUPPORT_ROLE => $roles[self::VIP_SUPPORT_ROLE] );
+		$vip_support_roles = array(
+			self::VIP_SUPPORT_INACTIVE_ROLE => $roles[self::VIP_SUPPORT_INACTIVE_ROLE],
+			self::VIP_SUPPORT_ROLE => $roles[self::VIP_SUPPORT_ROLE],
+		);
+		unset( $roles[self::VIP_SUPPORT_INACTIVE_ROLE] );
 		unset( $roles[self::VIP_SUPPORT_ROLE] );
-		$roles = array_merge( $vip_support_role, $roles );
+		$roles = array_merge( $vip_support_roles, $roles );
 		return $roles;
 	}
 
@@ -115,11 +128,16 @@ class WPCOM_VIP_Support_Role {
 
 	}
 
-	protected function add_role() {
+	protected function add_roles() {
+		// N.B. The capabilities are granted dynamically on the map_meta_cap filter
+		remove_role( self::VIP_SUPPORT_ROLE );
+		remove_role( self::VIP_SUPPORT_INACTIVE_ROLE );
 		if ( function_exists( 'wpcom_vip_add_role' ) ) {
 			wpcom_vip_add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), array( 'read' => true ) );
+			wpcom_vip_add_role( self::VIP_SUPPORT_INACTIVE_ROLE, __( 'VIP Support (inactive)', 'a8c_vip_support' ), array( 'read' => true ) );
 		} else {
 			add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), array( 'read' => true ) );
+			add_role( self::VIP_SUPPORT_INACTIVE_ROLE, __( 'VIP Support (inactive)', 'a8c_vip_support' ), array( 'read' => true ) );
 		}
 	}
 
@@ -136,9 +154,9 @@ class WPCOM_VIP_Support_Role {
 			return;
 		}
 
-		if ( $version < 1 && function_exists( 'wpcom_vip_add_role' ) ) {
-			$this->add_role();
-		    $this->error_log( "VIP Support Role: Added VIP Support role " );
+		if ( $version < 2 ) {
+			$this->add_roles();
+			$this->error_log( "VIP Support Role: Added VIP Support roles" );
 		}
 
 		// N.B. Remember to increment self::VERSION above when you add a new IF
