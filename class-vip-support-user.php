@@ -679,7 +679,7 @@ class WPCOM_VIP_Support_User {
 	 * @param int $user_id The ID of the user to mark as having a verified email
 	 * @param string $user_email The email which has been verified
 	 */
-	protected function mark_user_email_verified( $user_id, $user_email ) {
+	public function mark_user_email_verified( $user_id, $user_email ) {
 		update_user_meta( $user_id, self::META_EMAIL_VERIFIED, $user_email );
 		delete_user_meta( $user_id, self::META_VERIFICATION_DATA );
 		delete_user_meta( $user_id, self::META_EMAIL_NEEDS_VERIFICATION );

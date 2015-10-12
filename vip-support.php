@@ -7,5 +7,8 @@
  * License:      GPLv2 or later
  */
 
-require_once( "class-vip-support-role.php" );
-require_once( "class-vip-support-user.php" );
+require_once( __DIR__ . '/class-vip-support-role.php' );
+require_once( __DIR__ . '/class-vip-support-user.php' );
+if ( defined('WP_CLI') && WP_CLI ) {
+	require_once( __DIR__ . '/class-vip-support-cli.php' );
+}
