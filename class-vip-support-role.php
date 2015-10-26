@@ -53,7 +53,7 @@ class WPCOM_VIP_Support_Role {
 	 * where we should be using `wpcom_vip_add_role`.
 	 */
 	public function action_init() {
-		$this->add_role();
+		self::add_role();
 	}
 
 	/**
@@ -110,14 +110,14 @@ class WPCOM_VIP_Support_Role {
 	 *
 	 * @param string $message The message to log
 	 */
-	protected function error_log( $message ) {
+	protected static function error_log( $message ) {
 		if ( defined( 'WP_DEBUG' ) || WP_DEBUG ) {
 			error_log( $message );
 		}
 
 	}
 
-	protected function add_role() {
+	protected static function add_role() {
 		if ( function_exists( 'wpcom_vip_add_role' ) ) {
 			wpcom_vip_add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), array( 'read' => true ) );
 		} else {
@@ -139,8 +139,8 @@ class WPCOM_VIP_Support_Role {
 		}
 
 		if ( $version < 1 && function_exists( 'wpcom_vip_add_role' ) ) {
-			$this->add_role();
-		    $this->error_log( "VIP Support Role: Added VIP Support role " );
+			self::add_role();
+			self::error_log( "VIP Support Role: Added VIP Support role " );
 		}
 
 		// N.B. Remember to increment self::VERSION above when you add a new IF
