@@ -40,6 +40,13 @@ class WPCOM_VIP_Support_User {
 	const MSG_MADE_VIP                   = 'vip_support_msg_5';
 
 	/**
+	 * GET parameter for a message: We downgraded this user from
+	 * the support role because their email address is no longer
+	 * verified.
+	 */
+	const MSG_DOWNGRADE_VIP_USER = 'vip_support_msg_6';
+
+	/**
 	 * Meta key for the email verification data.
 	 */
 	const META_VERIFICATION_DATA = '_vip_email_verification_data';
@@ -250,6 +257,9 @@ class WPCOM_VIP_Support_User {
 				case self::MSG_BLOCK_DOWNGRADE :
 					$error_html = __( 'VIP Support users can only be assigned the VIP Support role, or deleted.', 'vip-support' );
 					break;
+				case self::MSG_DOWNGRADE_VIP_USER :
+					$error_html = __( 'This user’s email address has changed, and as a result they are no longer in the VIP Support role. Once the user has verified their new email address they will have the VIP Support role restored.', 'vip-support' );
+					break;
 				default:
 					break;
 			}
@@ -402,6 +412,7 @@ class WPCOM_VIP_Support_User {
 		$verified_email = get_user_meta( $user_id, self::META_EMAIL_VERIFIED, true );
 		if ( $user->user_email != $verified_email && $user->has_cap( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE ) ) {
 			$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE );
+			$this->message_replace = self::MSG_DOWNGRADE_VIP_USER;
 			delete_user_meta( $user_id, self::META_EMAIL_VERIFIED );
 			delete_user_meta( $user_id, self::META_VERIFICATION_DATA );
 			if ( $user->has_cap( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE ) || $user->has_cap( WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE ) ) {
