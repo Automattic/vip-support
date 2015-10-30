@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-echo " Arg 1 $1"
-echo " Arg 2 $2"
-
 if [ $# -lt 2 ]; then
 	echo "usage: $0 <db-create-user> <db-create-pass> [db-create-host]"
 	exit 1
