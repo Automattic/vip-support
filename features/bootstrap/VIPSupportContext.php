@@ -45,8 +45,8 @@ class VIPSupportContext extends WordPressContext implements Context, SnippetAcce
 	 */
 	public function wpLogin( $username, $password, $redirect_to ) {
 		$session = $this->getSession();
-		$context = $this->getMainContext();
-		$url = $context->locatePath( '/wp-login.php' );
+//		$context = $this->getMainContext();
+		$url = $session->locatePath( '/wp-login.php' );
 		$url .= '?' . http_build_query( array( 'redirect_to' => $redirect_to ) );
 		$session->visit( $url );
 		$this->fillField( 'Username', $username );
