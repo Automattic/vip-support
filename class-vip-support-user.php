@@ -277,7 +277,7 @@ class WPCOM_VIP_Support_User {
 				$user_id = absint( $_GET['user_id'] );
 				$user = get_user_by( 'id', $user_id );
 				$resend_link = $this->get_trigger_resend_verification_url();
-				if ( $this->is_a8c_email( $user->user_email ) && ! $this->user_has_verified_email( $user->ID ) ) {
+				if ( $this->is_a8c_email( $user->user_email ) && ! $this->user_has_verified_email( $user->ID ) && $this->user_has_vip_support_role( $user->ID ) ) {
 					$error_html = sprintf( __( 'This user’s Automattic email address is not verified, <a href="%s">re-send verification email</a>.', 'vip-support' ), esc_url( $resend_link ) );
 				}
 			}
