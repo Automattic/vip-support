@@ -6,8 +6,9 @@ PHP_SERVER_PID=$!
 
 # Run Behat tests
 ./bin/behat
+BEHAT_EXIT_CODE=$?
 
 # Kill the PHP web server we started
 kill $PHP_SERVER_PID
 
-exit 0
+exit $BEHAT_EXIT_CODE
