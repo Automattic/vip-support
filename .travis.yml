@@ -20,7 +20,7 @@ install:
 script:
     - if [[ "$WP_VERSION" == "latest" ]]; then if find . -not \( -path ./vendor -prune \) -not \( -path ./features -prune \) -name "*.php" -exec php -l {} \; | grep "^[Parse error|Fatal error]"; then exit 1; fi; fi;
     - phpunit
-    - bash bin/behat.sh
+    - bash bin/behat.sh "root" ""
 
 notifications:
     on_success: never
