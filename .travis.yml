@@ -14,13 +14,13 @@ before_install:
   - export WORDPRESS_FAKE_MAIL_DIR="$(dirname $TRAVIS_BUILD_DIR)/fake-mail/"
 
 install:
-    - bash bin/install-behat.sh
+    - bash bin/install-behat.sh root ''
     - bash bin/install-phpunit.sh wordpress_test root '' localhost $WP_VERSION
 
 script:
     - if [[ "$WP_VERSION" == "latest" ]]; then if find . -not \( -path ./vendor -prune \) -not \( -path ./features -prune \) -name "*.php" -exec php -l {} \; | grep "^[Parse error|Fatal error]"; then exit 1; fi; fi;
     - phpunit
-    - bash bin/behat.sh "root" ""
+    - bash bin/behat.sh
 
 notifications:
     on_success: never
