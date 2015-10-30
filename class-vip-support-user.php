@@ -329,6 +329,7 @@ class WPCOM_VIP_Support_User {
 			$user->set_role( $revert_role_to );
 			if ( $this->is_a8c_email( $user->user_email ) && ! $this->user_has_verified_email( $user_id ) ) {
 				$this->message_replace = self::MSG_BLOCK_UPGRADE_VERIFY_EMAIL;
+				$this->send_verification_email( $user_id );
 			} else {
 				$this->message_replace = self::MSG_BLOCK_UPGRADE_NON_A11N;
 			}
