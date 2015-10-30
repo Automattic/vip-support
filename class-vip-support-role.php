@@ -61,8 +61,7 @@ class WPCOM_VIP_Support_Role {
 	 * where we should be using `wpcom_vip_add_role`.
 	 */
 	public function action_init() {
-		// @FIXME If we're not using `wpcom_vip_add_role` we don't need to run this on every init
-		$this->add_roles();
+		self::add_role();
 	}
 
 	/**
@@ -88,8 +87,10 @@ class WPCOM_VIP_Support_Role {
 	 * @return array An array of all the user's caps, with the required cap added
 	 */
 	public function filter_user_has_cap( array $user_caps, array $caps, array $args, WP_User $user ) {
-		if ( in_array( self::VIP_SUPPORT_ROLE, $user->roles ) && WPCOM_VIP_Support_User::init()->is_verified_automattician( $user->ID ) ) {
-			$user_caps[$args[0]] = true;
+		if ( in_array( self::VIP_SUPPORT_ROLE, $user->roles ) ) {
+			foreach ( $caps as $cap ) {
+				$user_caps[$cap] = true;
+			}
 		}
 		return $user_caps;
 	}
@@ -121,17 +122,14 @@ class WPCOM_VIP_Support_Role {
 	 *
 	 * @param string $message The message to log
 	 */
-	protected function error_log( $message ) {
+	protected static function error_log( $message ) {
 		if ( defined( 'WP_DEBUG' ) || WP_DEBUG ) {
 			error_log( $message );
 		}
 
 	}
 
-	protected function add_roles() {
-		// N.B. The capabilities are granted dynamically on the map_meta_cap filter
-		remove_role( self::VIP_SUPPORT_ROLE );
-		remove_role( self::VIP_SUPPORT_INACTIVE_ROLE );
+	protected static function add_role() {
 		if ( function_exists( 'wpcom_vip_add_role' ) ) {
 			wpcom_vip_add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), array( 'read' => true ) );
 			wpcom_vip_add_role( self::VIP_SUPPORT_INACTIVE_ROLE, __( 'VIP Support (inactive)', 'a8c_vip_support' ), array( 'read' => true ) );
@@ -154,9 +152,9 @@ class WPCOM_VIP_Support_Role {
 			return;
 		}
 
-		if ( $version < 2 ) {
-			$this->add_roles();
-			$this->error_log( "VIP Support Role: Added VIP Support roles" );
+		if ( $version < 1 && function_exists( 'wpcom_vip_add_role' ) ) {
+			self::add_role();
+			self::error_log( "VIP Support Role: Added VIP Support role " );
 		}
 
 		// N.B. Remember to increment self::VERSION above when you add a new IF
