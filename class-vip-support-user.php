@@ -617,14 +617,24 @@ class WPCOM_VIP_Support_User {
 		return ( $is_a8c_email && $email_verified );
 	}
 
-	public function user_has_vip_support_role( $user_id ) {
+	public function user_has_vip_support_role( $user_id, $active_role = true ) {
 		$user = new WP_User( $user_id );
 
 		if ( ! $user || ! $user->ID ) {
 			return false;
 		}
 
-		return user_can( $user_id, WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE );
+		$wp_roles = wp_roles();
+
+		// Filter out caps that are not role names and assign to $user_roles
+		if ( is_array( $user->caps ) )
+			$user_roles = array_filter( array_keys( $user->caps ), array( $wp_roles, 'is_role' ) );
+		
+		if ( false === $active_role) {
+			return in_array( WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE, $user_roles, true );
+		}
+
+		return in_array( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE, $user_roles, true );
 	}
 
 	/**
