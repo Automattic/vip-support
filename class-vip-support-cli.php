@@ -95,7 +95,7 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 			\WP_CLI::error( "Could not find a user with ID $user_id" );
 		}
 
-		WPCOM_VIP_Support_User::init()->mark_user_email_verified( $user->user_id, $user->user_email );
+		WPCOM_VIP_Support_User::init()->mark_user_email_verified( $user->ID, $user->user_email );
 
 		// Print a success message
 		\WP_CLI::success( "Verified user $user_id with email {$user->user_email}, you can now change their role to VIP Support" );
