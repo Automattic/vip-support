@@ -490,6 +490,12 @@ class WPCOM_VIP_Support_User {
 			$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE );
 		}
 
+		// If we're multisite, they'll need Super Admin rights
+		if ( is_multisite() ) {
+			require_once( ABSPATH . '/wp-admin/includes/ms.php' );
+			grant_super_admin( $user->ID );
+		}
+
 		$message = sprintf( __( 'Your email has been verified as %s', 'vip-support' ), $user->user_email );
 		$title = __( 'Verification succeeded', 'vip-support' );
 		wp_die( $message, $title, array( 'response' => 200 ) );
