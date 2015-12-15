@@ -133,6 +133,7 @@ class WPCOM_VIP_Support_User {
 		add_action( 'profile_update',     array( $this, 'action_profile_update' ) );
 		add_action( 'admin_head',         array( $this, 'action_admin_head' ) );
 		add_action( 'password_reset',     array( $this, 'action_password_reset' ) );
+		add_action( 'wp_login',           array( $this, 'action_wp_login' ), 10, 2 );
 
 		add_filter( 'wp_redirect',          array( $this, 'filter_wp_redirect' ) );
 		add_filter( 'removable_query_args', array( $this, 'filter_removable_query_args' ) );
@@ -505,6 +506,34 @@ class WPCOM_VIP_Support_User {
 	public function filter_removable_query_args( $args ) {
 		$args[] = self::GET_TRIGGER_RESEND_VERIFICATION;
 		return $args;
+	}
+
+	/**
+	 * Hooks the wp_login action to make any verified VIP Support user
+	 * a Super Admin!
+	 *
+	 * @param $user_login The login for the logging in user
+	 * @param WP_User $user The WP_User object for the logging in user
+	 *
+	 * @return void
+	 */
+	public function action_wp_login( $user_login, WP_User $user ) {
+		if ( ! is_multisite() ) {
+			return;
+		}
+		if ( ! $this->user_has_vip_support_role( $user->ID ) ){
+			return;
+		}
+		if ( ! $this->user_has_verified_email( $user->ID ) ) {
+			return;
+		}
+		if ( is_super_admin( $user->ID ) ) {
+			return;
+		}
+		// This user is VIP Support, verified, let's give them
+		// great power and responsibility
+		require_once( ABSPATH . '/wp-admin/includes/ms.php' );
+		grant_super_admin( $user->ID );
 	}
 
 	// UTILITIES
