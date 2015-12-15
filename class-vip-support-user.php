@@ -326,6 +326,9 @@ class WPCOM_VIP_Support_User {
 		$valid_and_verified_email = ( $this->is_a8c_email( $user->user_email ) && $this->user_has_verified_email( $user_id ) );
 
 		if ( $becoming_support && ! $valid_and_verified_email ) {
+			if ( is_multisite() ) {
+				revoke_super_admin( $user_id );
+			}
 			$this->reverting_role = true;
 			// @FIXME This could be expressed more simply, probably :|
 			if ( ! is_array( $old_roles ) || ! isset( $old_roles[0] ) ) {
@@ -391,6 +394,11 @@ class WPCOM_VIP_Support_User {
 		$user = new WP_User( $user_id );
 		if ( $this->is_a8c_email( $user->user_email ) && $this->user_has_vip_support_role( $user->ID ) ) {
 			$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE );
+			// I cannot see that they can be a Super Admin at
+			// point, but better safe than sorry, eh?
+			if ( is_multisite() ) {
+				revoke_super_admin( $user_id );
+			}
 			$this->registering_a11n = true;
 			// @TODO Abstract this into an UNVERIFY method
 			$this->mark_user_email_unverified( $user_id );
@@ -413,6 +421,9 @@ class WPCOM_VIP_Support_User {
 		$verified_email = get_user_meta( $user_id, self::META_EMAIL_VERIFIED, true );
 		if ( $user->user_email !== $verified_email && $this->user_has_vip_support_role( $user_id ) ) {
 			$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE );
+			if ( is_multisite() ) {
+				revoke_super_admin( $user_id );
+			}
 			$this->message_replace = self::MSG_DOWNGRADE_VIP_USER;
 			delete_user_meta( $user_id, self::META_EMAIL_VERIFIED );
 			delete_user_meta( $user_id, self::META_VERIFICATION_DATA );
