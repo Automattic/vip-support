@@ -133,6 +133,7 @@ class WPCOM_VIP_Support_User {
 		add_action( 'profile_update',     array( $this, 'action_profile_update' ) );
 		add_action( 'admin_head',         array( $this, 'action_admin_head' ) );
 		add_action( 'password_reset',     array( $this, 'action_password_reset' ) );
+		add_action( 'wp_login',           array( $this, 'action_wp_login' ), 10, 2 );
 
 		add_filter( 'wp_redirect',          array( $this, 'filter_wp_redirect' ) );
 		add_filter( 'removable_query_args', array( $this, 'filter_removable_query_args' ) );
@@ -325,6 +326,9 @@ class WPCOM_VIP_Support_User {
 		$valid_and_verified_email = ( $this->is_a8c_email( $user->user_email ) && $this->user_has_verified_email( $user_id ) );
 
 		if ( $becoming_support && ! $valid_and_verified_email ) {
+			if ( is_multisite() ) {
+				revoke_super_admin( $user_id );
+			}
 			$this->reverting_role = true;
 			// @FIXME This could be expressed more simply, probably :|
 			if ( ! is_array( $old_roles ) || ! isset( $old_roles[0] ) ) {
@@ -390,6 +394,11 @@ class WPCOM_VIP_Support_User {
 		$user = new WP_User( $user_id );
 		if ( $this->is_a8c_email( $user->user_email ) && $this->user_has_vip_support_role( $user->ID ) ) {
 			$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE );
+			// I cannot see that they can be a Super Admin at
+			// point, but better safe than sorry, eh?
+			if ( is_multisite() ) {
+				revoke_super_admin( $user_id );
+			}
 			$this->registering_a11n = true;
 			// @TODO Abstract this into an UNVERIFY method
 			$this->mark_user_email_unverified( $user_id );
@@ -412,6 +421,9 @@ class WPCOM_VIP_Support_User {
 		$verified_email = get_user_meta( $user_id, self::META_EMAIL_VERIFIED, true );
 		if ( $user->user_email !== $verified_email && $this->user_has_vip_support_role( $user_id ) ) {
 			$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE );
+			if ( is_multisite() ) {
+				revoke_super_admin( $user_id );
+			}
 			$this->message_replace = self::MSG_DOWNGRADE_VIP_USER;
 			delete_user_meta( $user_id, self::META_EMAIL_VERIFIED );
 			delete_user_meta( $user_id, self::META_VERIFICATION_DATA );
@@ -489,6 +501,12 @@ class WPCOM_VIP_Support_User {
 			$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE );
 		}
 
+		// If we're multisite, they'll need Super Admin rights
+		if ( is_multisite() ) {
+			require_once( ABSPATH . '/wp-admin/includes/ms.php' );
+			grant_super_admin( $user->ID );
+		}
+
 		$message = sprintf( __( 'Your email has been verified as %s', 'vip-support' ), $user->user_email );
 		$title = __( 'Verification succeeded', 'vip-support' );
 		wp_die( $message, $title, array( 'response' => 200 ) );
@@ -505,6 +523,34 @@ class WPCOM_VIP_Support_User {
 	public function filter_removable_query_args( $args ) {
 		$args[] = self::GET_TRIGGER_RESEND_VERIFICATION;
 		return $args;
+	}
+
+	/**
+	 * Hooks the wp_login action to make any verified VIP Support user
+	 * a Super Admin!
+	 *
+	 * @param $user_login The login for the logging in user
+	 * @param WP_User $user The WP_User object for the logging in user
+	 *
+	 * @return void
+	 */
+	public function action_wp_login( $user_login, WP_User $user ) {
+		if ( ! is_multisite() ) {
+			return;
+		}
+		if ( ! $this->user_has_vip_support_role( $user->ID ) ){
+			return;
+		}
+		if ( ! $this->user_has_verified_email( $user->ID ) ) {
+			return;
+		}
+		if ( is_super_admin( $user->ID ) ) {
+			return;
+		}
+		// This user is VIP Support, verified, let's give them
+		// great power and responsibility
+		require_once( ABSPATH . '/wp-admin/includes/ms.php' );
+		grant_super_admin( $user->ID );
 	}
 
 	// UTILITIES
