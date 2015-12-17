@@ -1,8 +1,5 @@
 <?php
 
-use \WP_CLI_Command;
-use \WP_User_Query;
-
 /**
  * Implements a WP CLI command that converts guid users to meta users
  * Class command
