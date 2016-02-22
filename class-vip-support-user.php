@@ -764,6 +764,34 @@ class WPCOM_VIP_Support_User {
 		update_user_meta( $user_id, self::META_EMAIL_NEEDS_VERIFICATION, false );
 	}
 
+	/**
+	 * 
+	 *
+	 * @param $user_id
+	 */
+	protected function promote_user_to_vip_support( $user_id ) {
+		$user = new WP_User( $user_id );
+		$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE );
+		if ( is_multisite() ) {
+			grant_super_admin( $user_id );
+		}
+		update_user_meta( $user->ID, $GLOBALS['wpdb']->get_blog_prefix() . 'user_level', 10 );
+	}
+
+	/**
+	 * Demote a user to a
+	 *
+	 * @param $user_id
+	 * @param $revert_role_to
+	 */
+	protected function demote_user_from_vip_support_to( $user_id, $revert_role_to ) {
+		$user = new WP_User( $user_id );
+		$user->set_role( $revert_role_to );
+		if ( is_multisite() ) {
+			revoke_super_admin( $user_id );
+		}
+	}
+
 }
 
 WPCOM_VIP_Support_User::init();
