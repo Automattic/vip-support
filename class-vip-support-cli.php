@@ -18,18 +18,18 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 	 *
 	 * @subcommand create-user
 	 *
-	 * @synopsis <user-login> <user-email> [--user-pass=<user-pass>] [--display-name=<display-name>]
+	 * @synopsis <user-login> <user-email> <user-pass> [--display-name=<display-name>]
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp vipsupport create-user username user@domain.tld --display-name="display name"
+	 *     wp vipsupport create-user username user@domain.tld user_password --display-name="display name"
 	 *
 	 */
 	public function add_support_user( $args, $assoc_args ) {
 
 		$user_login   = $args[0];
 		$user_email   = $args[1];
-		$user_pass = $assoc_args['user-pass'];
+		$user_pass    = $args[2];
 		$display_name = $assoc_args['display-name'];
 
 		// @TODO Check the email address is an A8c domain, will need to convert the method to static
