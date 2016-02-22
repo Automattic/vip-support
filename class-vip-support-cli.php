@@ -47,12 +47,41 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 		$user_data['user_email']   = $user_email;
 		$user_data['display_name'] = $display_name;
 
-		$user_id = wp_insert_user( $user_data );
+		// A user with this email address may already exist, in which case
+		// we should update that user record
+		$user = get_user_by( 'email', $user_email );
 
-		// It's possible the user insert will fail, we need to cope with this
+		$update_user = true;
+		if ( false === $user ) {
+			$update_user = false;
+		}
+
+		// If the user already exists, we should delete and recreate them,
+		// it's the only way to be sure we get the right user_login
+		if ( false !== $user && $user_login !== $user->user_login ) {
+			if ( is_multisite() ) {
+				revoke_super_admin( $user->ID );
+				wpmu_delete_user( $user->ID );
+			} else {
+				wp_delete_user( $user->ID, null );
+			}
+			$user = false;
+		} else {
+			$user_data['ID'] = $user->ID;
+		}
+
+		if ( false === $user ) {
+			$user_id = wp_insert_user( $user_data );
+		} else {
+			add_filter( 'send_password_change_email', '__return_false' );
+			$user_id = wp_update_user( $user_data );
+		}
+
+		// It's possible the user update/insert will fail, we need to log this
 		if ( is_wp_error( $user_id ) ) {
 			\WP_CLI::error( $user_id );
 		}
+
 		remove_action( 'set_user_role', array( WPCOM_VIP_Support_User::init(), 'action_set_user_role' ), 10, 3 );
 		$user = new WP_User( $user_id );
 		add_action( 'set_user_role', array( WPCOM_VIP_Support_User::init(), 'action_set_user_role' ), 10, 3 );
