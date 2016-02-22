@@ -538,6 +538,15 @@ class WPCOM_VIP_Support_User {
 		if ( ! is_multisite() ) {
 			return;
 		}
+		// If the user:
+		// * Is an inactive support user
+		// * Is a super admin
+		// …revoke their powers
+		if ( $this->user_has_vip_support_role( $user->ID, false ) && is_super_admin( $user->ID ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/ms.php' );
+			revoke_super_admin( $user->ID );
+			return;
+		}
 		if ( ! $this->user_has_vip_support_role( $user->ID ) ){
 			return;
 		}
