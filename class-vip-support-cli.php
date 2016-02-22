@@ -95,6 +95,11 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 
 		// Print a success message
 		\WP_CLI::success( "Added user $user_id with login {$user_login}, they are verified as a VP Support user and ready to go" );
+		// If this is a multisite, commence super powers!
+		if ( is_multisite() ) {
+			grant_super_admin( $user->ID );
+		}
+
 	}
 
 
@@ -122,6 +127,10 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 		$user = get_user_by( 'id', $user_id );
 		if ( ! $user ) {
 			\WP_CLI::error( "Could not find a user with ID $user_id" );
+
+		// If this is a multisite, commence super powers!
+		if ( is_multisite() ) {
+			grant_super_admin( $user->ID );
 		}
 
 		WPCOM_VIP_Support_User::init()->mark_user_email_verified( $user->ID, $user->user_email );
