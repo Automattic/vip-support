@@ -705,7 +705,6 @@ class WPCOM_VIP_Support_User {
 		if ( ! $verification_data ) {
 			$verification_data = array(
 				'touch' => current_time( 'timestamp', true ), // GPL timestamp
-				'email' => $user->user_email,
 			);
 			$generate_new_code = true;
 		}
@@ -718,6 +717,10 @@ class WPCOM_VIP_Support_User {
 			$verification_data['code']  = bin2hex( openssl_random_pseudo_bytes( 16 ) );
 			$verification_data['touch'] = current_time( 'timestamp', true );
 		}
+
+		// Refresh the email, in case it changed since we created the meta
+		// (this can happen if a user changes their email 1+ times)
+		$verification_data['email'] = $user->user_email;
 
 		update_user_meta( $user_id, self::META_VERIFICATION_DATA, $verification_data );
 
