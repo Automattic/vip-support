@@ -756,6 +756,7 @@ class WPCOM_VIP_Support_User {
 		$user = new WP_User( $user_id );
 		$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE );
 		if ( is_multisite() ) {
+			require_once( ABSPATH . '/wp-admin/includes/ms.php' );
 			grant_super_admin( $user_id );
 		}
 		update_user_meta( $user->ID, $GLOBALS['wpdb']->get_blog_prefix() . 'user_level', 10 );
@@ -771,6 +772,7 @@ class WPCOM_VIP_Support_User {
 		$user = new WP_User( $user_id );
 		$user->set_role( $revert_role_to );
 		if ( is_multisite() ) {
+			require_once( ABSPATH . '/wp-admin/includes/ms.php' );
 			revoke_super_admin( $user_id );
 		}
 	}
