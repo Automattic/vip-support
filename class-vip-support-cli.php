@@ -37,10 +37,6 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 			\WP_CLI::error( "User cannot be added as '{$user_email}' is not a valid email address" );
 		}
 
-		if ( empty( $user_pass ) ) {
-			$user_pass = wp_generate_password( 64 );
-		}
-
 		$user_data = array();
 		$user_data['user_pass']    = $user_pass;
 		$user_data['user_login']   = $user_login;
