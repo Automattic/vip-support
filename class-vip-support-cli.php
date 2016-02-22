@@ -102,6 +102,48 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 		\WP_CLI::success( $msg );
 	}
 
+	/**
+	 * Removes a user in the VIP Support role.
+	 *
+	 * @subcommand remove-user
+	 *
+	 * @synopsis <user-email>
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp vipsupport remove-user user@domain.tld
+	 *
+	 */
+	public function remove_support_user( $args, $assoc_args ) {
+
+		$user_email = $args[0];
+
+		// Let's find the user
+		$user = get_user_by( 'email', $user_email );
+
+		if ( false === $user ) {
+			\WP_CLI::error( "No user exists with the email address {$user_email}, so they could not be deleted" );
+		}
+
+		// Check user has the active or inactive VIP Support role,
+		// and bail out if not
+		if ( ! WPCOM_VIP_Support_User::user_has_vip_support_role( $user->ID, true )
+			&& ! WPCOM_VIP_Support_User::user_has_vip_support_role( $user->ID, false ) ) {
+			\WP_CLI::error( "The user with email {$user_email} is not in the active or the inactive VIP Support roles" );
+		}
+
+		// If the user already exists, we should delete and recreate them,
+		// it's the only way to be sure we get the right user_login
+		if ( is_multisite() ) {
+			revoke_super_admin( $user->ID );
+			wpmu_delete_user( $user->ID );
+		} else {
+			wp_delete_user( $user->ID, null );
+		}
+
+		\WP_CLI::success( "Deleted user with email {$user_email}" );
+	}
+
 
 	/**
 	 * Marks the user with the provided ID as having a verified email.
@@ -138,8 +180,6 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 		// Print a success message
 		\WP_CLI::success( "Verified user $user_id with email {$user->user_email}, you can now change their role to VIP Support" );
 	}
-
-	// @TODO: Add a remove command
 
 }
 
