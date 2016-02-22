@@ -130,6 +130,8 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 		\WP_CLI::success( "Verified user $user_id with email {$user->user_email}, you can now change their role to VIP Support" );
 	}
 
+	// @TODO: Add a remove command
+
 }
 
 \WP_CLI::add_command( 'vipsupport', 'WPCOM_VIP_Support_CLI' );
