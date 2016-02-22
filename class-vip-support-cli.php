@@ -22,7 +22,7 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp vipsupport create-user username user@domain.tld display_name
+	 *     wp vipsupport create-user username user@domain.tld --display-name="display name"
 	 *
 	 */
 	public function add_support_user( $args, $assoc_args ) {
