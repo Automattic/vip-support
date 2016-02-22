@@ -93,13 +93,17 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 		WPCOM_VIP_Support_User::init()->mark_user_email_verified( $user->ID, $user->user_email );
 		$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE );
 
-		// Print a success message
-		\WP_CLI::success( "Added user $user_id with login {$user_login}, they are verified as a VP Support user and ready to go" );
 		// If this is a multisite, commence super powers!
 		if ( is_multisite() ) {
 			grant_super_admin( $user->ID );
 		}
 
+		$msg = "Added";
+		if ( $update_user ) {
+			$msg = "Updated";
+		}
+		$msg .= " user $user_id with login {$user_login} and password '{$user_pass}', they are verified as a VIP Support user and ready to go";
+		\WP_CLI::success( $msg );
 	}
 
 
