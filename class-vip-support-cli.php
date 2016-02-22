@@ -159,7 +159,7 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 	 *     wp vipsupport verify 99
 	 *
 	 */
-	public function verify( $args, $assoc_args ) {
+	public function verify( $args ) {
 
 		$user_id = absint( $args[0] );
 		if ( ! $user_id ) {
