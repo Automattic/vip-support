@@ -32,7 +32,7 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 		$user_pass = $assoc_args['user-pass'];
 		$display_name = $assoc_args['display-name'];
 
-		// @TODO Verify the email address
+		// @TODO Check the email address is an A8c domain, will need to convert the method to static
 		if ( ! is_email( $user_email ) ) {
 			\WP_CLI::error( "User cannot be added as '{$user_email}' is not a valid email address" );
 		}
