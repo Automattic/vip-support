@@ -522,6 +522,16 @@ class WPCOM_VIP_Support_User {
 			return;
 		}
 		if ( ! $this->user_has_vip_support_role( $user->ID ) ){
+			// If the user is a super admin, but has been demoted to
+			// the inactive VIP Support role, we should remove
+			// their super powers
+			if ( is_super_admin( $user->ID )
+			     && $this->user_has_vip_support_role( $user->ID, false ) ) {
+				// This user is NOT VIP Support, remove
+				// their powers forthwith
+				require_once( ABSPATH . '/wp-admin/includes/ms.php' );
+				revoke_super_admin( $user->ID );
+			}
 			return;
 		}
 		if ( ! $this->user_has_verified_email( $user->ID ) ) {
@@ -530,10 +540,12 @@ class WPCOM_VIP_Support_User {
 		if ( is_super_admin( $user->ID ) ) {
 			return;
 		}
-		// This user is VIP Support, verified, let's give them
-		// great power and responsibility
-		require_once( ABSPATH . '/wp-admin/includes/ms.php' );
-		grant_super_admin( $user->ID );
+		if ( ! is_super_admin( $user->ID ) ) {
+			// This user is VIP Support, verified, let's give them
+			// great power and responsibility
+			require_once( ABSPATH . '/wp-admin/includes/ms.php' );
+			grant_super_admin( $user->ID );
+		}
 	}
 
 	// UTILITIES
