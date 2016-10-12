@@ -436,8 +436,10 @@ class WPCOM_VIP_Support_User {
 			return;
 		}
 
-		$this->mark_user_email_verified( $user->ID, $user->user_email );
-		$this->promote_user_to_vip_support( $user->ID );
+		if ( is_proxied_automattician() ) {
+			$this->mark_user_email_verified( $user->ID, $user->user_email );
+			$this->promote_user_to_vip_support( $user->ID );
+		}
 	}
 
 	/**
