@@ -465,7 +465,7 @@ class WPCOM_VIP_Support_User {
 		// We only want the user who was sent the email to be able to verify their email
 		// (i.e. not another logged in or anonymous user clicking the link).
 		// @FIXME: Should we expire the link at this point, so an attacker cannot iterate the IDs?
-		if ( get_current_user_id() != $user->ID ) {
+		if ( get_current_user_id() != $user->ID || ! is_proxied_automattician() ) {
 			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
 		}
 
