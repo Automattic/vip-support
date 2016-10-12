@@ -467,12 +467,18 @@ class WPCOM_VIP_Support_User {
 		// We only want the user who was sent the email to be able to verify their email
 		// (i.e. not another logged in or anonymous user clicking the link).
 		// @FIXME: Should we expire the link at this point, so an attacker cannot iterate the IDs?
-		if ( get_current_user_id() != $user->ID || ! is_proxied_automattician() ) {
+		if ( get_current_user_id() != $user->ID ) {
 			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
 		}
 
 		if ( ! $this->is_a8c_email( $user->user_email ) ) {
 			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
+		}
+
+		if ( ! is_proxied_automattician() ) {
+			$proxy_rebuffal_title   = __( 'Please proxy', 'vip-support' );
+			$proxy_rebuffal_message = __( 'Your IP is not special enough, please proxy.', 'vip-support' );
+			wp_die( $proxy_rebuffal_message, $proxy_rebuffal_title, array( 'response' => 403 ) );
 		}
 
 		$stored_verification_code = $this->get_user_email_verification_code( $user->ID );
