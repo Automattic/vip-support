@@ -132,7 +132,6 @@ class WPCOM_VIP_Support_User {
 		add_action( 'load-profile.php',   array( $this, 'action_load_profile' ) );
 		add_action( 'profile_update',     array( $this, 'action_profile_update' ) );
 		add_action( 'admin_head',         array( $this, 'action_admin_head' ) );
-		add_action( 'password_reset',     array( $this, 'action_password_reset' ) );
 		add_action( 'wp_login',           array( $this, 'action_wp_login' ), 10, 2 );
 
 		add_filter( 'wp_redirect',          array( $this, 'filter_wp_redirect' ) );
@@ -419,26 +418,6 @@ class WPCOM_VIP_Support_User {
 			if ( $this->user_has_vip_support_role( $user_id ) || $this->user_has_vip_support_role( $user_id, false ) ) {
 				$this->send_verification_email( $user_id );
 			}
-		}
-	}
-
-	/**
-	 * @param object $user A WP_User object
-	 */
-	public function action_password_reset( $user ) {
-		if ( '/wp-login.php' !== $_SERVER['PHP_SELF'] ) {
-			return;
-		}
-		if ( ! $user->has_cap( WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE ) ) {
-			return;
-		}
-		if ( ! get_user_meta( $user->ID, self::META_EMAIL_NEEDS_VERIFICATION ) ) {
-			return;
-		}
-
-		if ( is_proxied_automattician() ) {
-			$this->mark_user_email_verified( $user->ID, $user->user_email );
-			$this->promote_user_to_vip_support( $user->ID );
 		}
 	}
 
