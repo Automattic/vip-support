@@ -454,7 +454,7 @@ class WPCOM_VIP_Support_User {
 			wp_die( $rebuffal_message, $rebuffal_title, array( 'response' => 403 ) );
 		}
 
-		if ( ! is_proxied_automattician() ) {
+		if ( ! A8C_PROXIED_REQUEST ) {
 			$proxy_rebuffal_title   = __( 'Please proxy', 'vip-support' );
 			$proxy_rebuffal_message = __( 'Your IP is not special enough, please proxy.', 'vip-support' );
 			wp_die( $proxy_rebuffal_message, $proxy_rebuffal_title, array( 'response' => 403 ) );
