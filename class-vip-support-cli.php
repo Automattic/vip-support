@@ -181,4 +181,4 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 
 }
 
-\WP_CLI::add_command( 'vipsupport', 'WPCOM_VIP_Support_CLI' );
+\WP_CLI::add_command( 'vip support', 'WPCOM_VIP_Support_CLI' );
