@@ -119,7 +119,7 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 		$user = get_user_by( 'email', $user_email );
 
 		if ( false === $user ) {
-			\WP_CLI::error( "No user exists with the email address {$user_email}, so they could not be deleted" );
+			\WP_CLI::line( "No user exists with the email address {$user_email}, so they could not be deleted" );
 		}
 
 		// Check user has the active or inactive VIP Support role,
