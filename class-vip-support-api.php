@@ -1,6 +1,6 @@
 <?php
 
-class VIP_Support_API {
+class VIP_Support_REST_Controller {
 
 	private static $namespace;
 
@@ -136,4 +136,4 @@ class VIP_Support_API {
 	}
 }
 
-new VIP_Support_API;
+new VIP_Support_REST_Controller;
