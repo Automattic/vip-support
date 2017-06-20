@@ -287,7 +287,7 @@ class WPCOM_VIP_Support_User {
 				$user_id = absint( $_GET['user_id'] );
 				$user = get_user_by( 'id', $user_id );
 				$resend_link = $this->get_trigger_resend_verification_url();
-				if ( $this->is_a8c_email( $user->user_email ) && ! $this->user_has_verified_email( $user->ID ) && $this->user_has_vip_support_role( $user->ID ) ) {
+				if ( $this->is_a8c_email( $user->user_email ) && ! $this->user_has_verified_email( $user->ID ) && self::user_has_vip_support_role( $user->ID ) ) {
 					$error_html = sprintf( __( 'This user’s Automattic email address is not verified, <a href="%s">re-send verification email</a>.', 'vip-support' ), esc_url( $resend_link ) );
 				}
 			}
@@ -388,7 +388,7 @@ class WPCOM_VIP_Support_User {
 	 */
 	public function action_user_register( $user_id ) {
 		$user = new WP_User( $user_id );
-		if ( $this->is_a8c_email( $user->user_email ) && $this->user_has_vip_support_role( $user->ID ) ) {
+		if ( $this->is_a8c_email( $user->user_email ) && self::user_has_vip_support_role( $user->ID ) ) {
 			$this->demote_user_from_vip_support_to( $user->ID, WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE );
 			$this->registering_a11n = true;
 			// @TODO Abstract this into an UNVERIFY method
@@ -410,12 +410,12 @@ class WPCOM_VIP_Support_User {
 	public function action_profile_update( $user_id ) {
 		$user = new WP_User( $user_id );
 		$verified_email = get_user_meta( $user_id, self::META_EMAIL_VERIFIED, true );
-		if ( $user->user_email !== $verified_email && $this->user_has_vip_support_role( $user_id ) ) {
+		if ( $user->user_email !== $verified_email && self::user_has_vip_support_role( $user_id ) ) {
 			$this->demote_user_from_vip_support_to( $user->ID, WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE );
 			$this->message_replace = self::MSG_DOWNGRADE_VIP_USER;
 			delete_user_meta( $user_id, self::META_EMAIL_VERIFIED );
 			delete_user_meta( $user_id, self::META_VERIFICATION_DATA );
-			if ( $this->user_has_vip_support_role( $user_id ) || $this->user_has_vip_support_role( $user_id, false ) ) {
+			if ( self::user_has_vip_support_role( $user_id ) || self::user_has_vip_support_role( $user_id, false ) ) {
 				$this->send_verification_email( $user_id );
 			}
 		}
@@ -512,17 +512,17 @@ class WPCOM_VIP_Support_User {
 		// * Is an inactive support user
 		// * Is a super admin
 		// …revoke their powers
-		if ( $this->user_has_vip_support_role( $user->ID, false ) && is_super_admin( $user->ID ) ) {
+		if ( self::user_has_vip_support_role( $user->ID, false ) && is_super_admin( $user->ID ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/ms.php' );
 			revoke_super_admin( $user->ID );
 			return;
 		}
-		if ( ! $this->user_has_vip_support_role( $user->ID ) ){
+		if ( ! self::user_has_vip_support_role( $user->ID ) ){
 			// If the user is a super admin, but has been demoted to
 			// the inactive VIP Support role, we should remove
 			// their super powers
 			if ( is_super_admin( $user->ID )
-			     && $this->user_has_vip_support_role( $user->ID, false ) ) {
+			     && self::user_has_vip_support_role( $user->ID, false ) ) {
 				// This user is NOT VIP Support, remove
 				// their powers forthwith
 				require_once( ABSPATH . '/wp-admin/includes/ms.php' );
@@ -654,7 +654,7 @@ class WPCOM_VIP_Support_User {
 		return ( $is_a8c_email && $email_verified );
 	}
 
-	public function user_has_vip_support_role( $user_id, $active_role = true ) {
+	public static function user_has_vip_support_role( $user_id, $active_role = true ) {
 		$user = new WP_User( $user_id );
 
 		if ( ! $user || ! $user->ID ) {
