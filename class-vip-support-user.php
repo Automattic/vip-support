@@ -808,7 +808,7 @@ function new_support_user( $user_data ) {
 			wp_delete_user( $user->ID, null );
 		}
 		$user = false;
-	} else {
+	} elseif ( $user && $user->ID ) {
 		$user_data['ID'] = $user->ID;
 	}
 
