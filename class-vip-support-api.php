@@ -54,28 +54,14 @@ class VIP_Support_REST_Controller {
 					$email = $request->get_param( 'user_email' );
 					$name = $request->get_param( 'display_name' );
 
-					$user = get_user_by( 'email', $email );
-
-					/** Include admin user functions to get access to wp_delete_user() */
-					require_once ABSPATH . 'wp-admin/includes/user.php';
-
-					// If the user already exists, delete and recreate
-					if ( ! $user || ! $user->user_login ) {
-						if ( is_multisite() ) {
-							revoke_super_admin( $user->ID );
-							wpmu_delete_user( $user->ID );
-						} else {
-							wp_delete_user( $user->ID );
-						}
-					}
-
-					$user_id = wp_insert_user( array(
-						'ID' => $user->ID,
+					$user_data = array(
 						'user_login' => $user_login,
-						'password' => $user_pass,
+						'user_pass' => $user_pass,
 						'user_email' => $email,
 						'display_name' => $name,
-					));
+					);
+
+					$user_id = new_support_user( $user_data );
 
 					if ( is_wp_error( $user_id ) ) {
 						return $user_id;
@@ -99,34 +85,10 @@ class VIP_Support_REST_Controller {
 				),
 				'callback' => function( WP_REST_Request $request ) {
 					$id = $request->get_param( 'id' );
-					$user = get_user_by( 'id', $id );
+					$success = remove_support_user( $id, 'id' );
 
-					if ( ! $user ) {
-						return new WP_Error( 'invalid-user', 'No user exists with that email address' );
-					}
-
-					if ( ! WPCOM_VIP_Support_User::user_has_vip_support_role( $user->ID, true )
-						&& ! WPCOM_VIP_Support_User::user_has_vip_support_role( $user->ID, false ) ) {
-
-						return new WP_Error( 'invalid-user', 'That is not a VIP Support user' );
-					}
-
-					/** Include admin user functions to get access to wp_delete_user() */
-					require_once ABSPATH . 'wp-admin/includes/user.php';
-
-					if ( ! $user || ! $user->user_login ) {
-						if ( is_multisite() ) {
-							revoke_super_admin( $user->ID );
-							$deleted = wpmu_delete_user( $user->ID );
-							if ( ! $deleted ) {
-								return new WP_Error( 'could-not-delete', 'Could not delete given user' );
-							}
-						} else {
-							$deleted = wp_delete_user( $user->ID );
-							if ( ! $deleted ) {
-								return new WP_Error( 'could-not-delete', 'Could not delete given user' );
-							}
-						}
+					if ( is_wp_error( $success ) ) {
+						return $success;
 					}
 
 					return array( 'success' => true );
