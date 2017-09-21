@@ -5,6 +5,8 @@
  * Version:      3.1.0
  * Author:       <a href="http://automattic.com">Automattic</a>
  * License:      GPLv2 or later
+ *
+ * @package WPCOM_VIP_Support_Role
  */
 
 namespace Automattic\VIP\Support_User;

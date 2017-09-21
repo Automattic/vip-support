@@ -12,7 +12,7 @@ use WP_CLI_Command;
  *
  * @package a8c\vip_support
  */
-class WPCOM_VIP_Support_CLI extends WP_CLI_Command {
+class CLI extends WP_CLI_Command {
 
 	/**
 	 * Creates a user in the VIP Support role, already verified,
@@ -45,7 +45,7 @@ class WPCOM_VIP_Support_CLI extends WP_CLI_Command {
 		$user_data['user_email']   = $user_email;
 		$user_data['display_name'] = $display_name;
 
-		$user_id = WPCOM_VIP_Support_User::add( $user_data );
+		$user_id = User::add( $user_data );
 
 		if ( is_wp_error( $user_id ) ) {
 			\WP_CLI::error( $user_id );
@@ -71,7 +71,7 @@ class WPCOM_VIP_Support_CLI extends WP_CLI_Command {
 
 		$user_email = $args[0];
 
-		$success = WPCOM_VIP_Support_User::remove( $user_email );
+		$success = User::remove( $user_email );
 
 		if ( is_wp_error( $success ) && $success['code'] === 'invalid-user' ) {
 			return \WP_CLI::warning( "No user exists with the email address {$user_email}, so they could not be deleted" );
@@ -121,7 +121,7 @@ class WPCOM_VIP_Support_CLI extends WP_CLI_Command {
 			grant_super_admin( $user->ID );
 		}
 
-		WPCOM_VIP_Support_User::init()->mark_user_email_verified( $user->ID, $user->user_email );
+		User::init()->mark_user_email_verified( $user->ID, $user->user_email );
 
 		// Print a success message
 		\WP_CLI::success( "Verified user $user_id with email {$user->user_email}, you can now change their role to VIP Support" );
@@ -129,4 +129,4 @@ class WPCOM_VIP_Support_CLI extends WP_CLI_Command {
 
 }
 
-\WP_CLI::add_command( 'vipsupport', 'WPCOM_VIP_Support_CLI' );
+\WP_CLI::add_command( 'vipsupport', __NAMESPACE__ . '\CLI' );

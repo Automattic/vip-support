@@ -12,7 +12,7 @@ use WP_User;
  *
  * @package WPCOM_VIP_Support_User
  **/
-class WPCOM_VIP_Support_User {
+class User {
 
 	/**
 	 * GET parameter for a message: We blocked this user from the
@@ -108,17 +108,17 @@ class WPCOM_VIP_Support_User {
 
 	/**
 	 * Initiate an instance of this class if one doesn't
-	 * exist already. Return the WPCOM_VIP_Support_User instance.
+	 * exist already. Return the User instance.
 	 *
 	 * @access @static
 	 *
-	 * @return WPCOM_VIP_Support_User object The instance of WPCOM_VIP_Support_User
+	 * @return User object The instance of User
 	 */
 	static public function init() {
 		static $instance = false;
 
 		if ( ! $instance ) {
-			$instance = new WPCOM_VIP_Support_User;
+			$instance = new User;
 		}
 
 		return $instance;
@@ -328,7 +328,7 @@ class WPCOM_VIP_Support_User {
 		$user = new WP_User( $user_id );
 
 		// Try to make the conditional checks clearer
-		$becoming_support         = ( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE == $role );
+		$becoming_support         = ( Role::VIP_SUPPORT_ROLE == $role );
 		$valid_and_verified_email = ( $this->is_a8c_email( $user->user_email ) && $this->user_has_verified_email( $user_id ) );
 
 		if ( $becoming_support && ! $valid_and_verified_email ) {
@@ -336,7 +336,7 @@ class WPCOM_VIP_Support_User {
 			// @FIXME This could be expressed more simply, probably :|
 			if ( ! is_array( $old_roles ) || ! isset( $old_roles[0] ) ) {
 				if ( $this->is_a8c_email( $user->user_email ) ) {
-					$revert_role_to = WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE;
+					$revert_role_to = Role::VIP_SUPPORT_INACTIVE_ROLE;
 				} else {
 					$revert_role_to = 'subscriber';
 				}
@@ -396,7 +396,7 @@ class WPCOM_VIP_Support_User {
 	public function action_user_register( $user_id ) {
 		$user = new WP_User( $user_id );
 		if ( $this->is_a8c_email( $user->user_email ) && self::user_has_vip_support_role( $user->ID ) ) {
-			$this->demote_user_from_vip_support_to( $user->ID, WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE );
+			$this->demote_user_from_vip_support_to( $user->ID, Role::VIP_SUPPORT_INACTIVE_ROLE );
 			$this->registering_a11n = true;
 			// @TODO Abstract this into an UNVERIFY method
 			$this->mark_user_email_unverified( $user_id );
@@ -418,7 +418,7 @@ class WPCOM_VIP_Support_User {
 		$user = new WP_User( $user_id );
 		$verified_email = get_user_meta( $user_id, self::META_EMAIL_VERIFIED, true );
 		if ( $user->user_email !== $verified_email && self::user_has_vip_support_role( $user_id ) ) {
-			$this->demote_user_from_vip_support_to( $user->ID, WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE );
+			$this->demote_user_from_vip_support_to( $user->ID, Role::VIP_SUPPORT_INACTIVE_ROLE );
 			$this->message_replace = self::MSG_DOWNGRADE_VIP_USER;
 			delete_user_meta( $user_id, self::META_EMAIL_VERIFIED );
 			delete_user_meta( $user_id, self::META_VERIFICATION_DATA );
@@ -675,10 +675,10 @@ class WPCOM_VIP_Support_User {
 			$user_roles = array_filter( array_keys( $user->caps ), array( $wp_roles, 'is_role' ) );
 
 		if ( false === $active_role) {
-			return in_array( WPCOM_VIP_Support_Role::VIP_SUPPORT_INACTIVE_ROLE, $user_roles, true );
+			return in_array( Role::VIP_SUPPORT_INACTIVE_ROLE, $user_roles, true );
 		}
 
-		return in_array( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE, $user_roles, true );
+		return in_array( Role::VIP_SUPPORT_ROLE, $user_roles, true );
 	}
 
 	/**
@@ -769,7 +769,7 @@ class WPCOM_VIP_Support_User {
 	 */
 	protected function promote_user_to_vip_support( $user_id ) {
 		$user = new WP_User( $user_id );
-		$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE );
+		$user->set_role( Role::VIP_SUPPORT_ROLE );
 		if ( is_multisite() ) {
 			require_once( ABSPATH . '/wp-admin/includes/ms.php' );
 			grant_super_admin( $user_id );
@@ -844,7 +844,7 @@ class WPCOM_VIP_Support_User {
 		wp_new_user_notification( $user_id, null, 'admin' );
 
 		self::init()->mark_user_email_verified( $user->ID, $user->user_email );
-		$user->set_role( WPCOM_VIP_Support_Role::VIP_SUPPORT_ROLE );
+		$user->set_role( Role::VIP_SUPPORT_ROLE );
 
 		// If this is a multisite, commence super powers!
 		if ( is_multisite() ) {
@@ -890,4 +890,4 @@ class WPCOM_VIP_Support_User {
 	}
 }
 
-WPCOM_VIP_Support_User::init();
+User::init();

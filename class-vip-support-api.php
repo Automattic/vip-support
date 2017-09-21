@@ -8,7 +8,7 @@ use WP_Error;
 use WP_REST_Server;
 use WP_REST_Request;
 
-class VIP_Support_REST_Controller {
+class REST_Controller {
 
 	private static $namespace;
 
@@ -69,7 +69,7 @@ class VIP_Support_REST_Controller {
 						'display_name' => $name,
 					);
 
-					$user_id = WPCOM_VIP_Support_User::add( $user_data );
+					$user_id = User::add( $user_data );
 
 					if ( is_wp_error( $user_id ) ) {
 						return $user_id;
@@ -93,7 +93,7 @@ class VIP_Support_REST_Controller {
 				),
 				'callback' => function( WP_REST_Request $request ) {
 					$id = $request->get_param( 'id' );
-					$success = WPCOM_VIP_Support_User::remove( $id, 'id' );
+					$success = User::remove( $id, 'id' );
 
 					if ( is_wp_error( $success ) ) {
 						return $success;
@@ -106,4 +106,4 @@ class VIP_Support_REST_Controller {
 	}
 }
 
-new VIP_Support_REST_Controller;
+new REST_Controller;
