@@ -7,6 +7,9 @@
  * License:      GPLv2 or later
  */
 
+namespace Automattic\VIP\Support_User;
+
+require_once( __DIR__ . '/functions.php' );
 require_once( __DIR__ . '/class-vip-support-role.php' );
 require_once( __DIR__ . '/class-vip-support-user.php' );
 require_once( __DIR__ . '/class-vip-support-api.php' );

@@ -1,4 +1,10 @@
 <?php
+/**
+ *
+ */
+
+namespace Automattic\VIP\Support_User;
+use WP_User;
 
 /**
  * Provides the VIP Support role

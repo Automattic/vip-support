@@ -1,4 +1,12 @@
 <?php
+/**
+ *
+ */
+
+namespace Automattic\VIP\Support_User;
+use WP_Error;
+use WP_REST_Server;
+use WP_REST_Request;
 
 class VIP_Support_REST_Controller {
 

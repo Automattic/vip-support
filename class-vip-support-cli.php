@@ -1,4 +1,10 @@
 <?php
+/**
+ *
+ */
+
+namespace Automattic\VIP\Support_User;
+use WP_CLI_Command;
 
 /**
  * Implements a WP CLI command that converts guid users to meta users
@@ -6,7 +12,7 @@
  *
  * @package a8c\vip_support
  */
-class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
+class WPCOM_VIP_Support_CLI extends WP_CLI_Command {
 
 	/**
 	 * Creates a user in the VIP Support role, already verified,
@@ -38,7 +44,6 @@ class WPCOM_VIP_Support_CLI  extends WP_CLI_Command {
 		$user_data['user_login']   = $user_login;
 		$user_data['user_email']   = $user_email;
 		$user_data['display_name'] = $display_name;
-
 
 		$user_id = new_support_user( $user_data );
 
