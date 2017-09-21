@@ -84,6 +84,11 @@ class User {
 	const GET_TRIGGER_RESEND_VERIFICATION = 'vip_trigger_resend';
 
 	/**
+	 * Cron action to purge support user after 24 hours.
+	 */
+	const CRON_REMOVE_ACTION = 'wpcom_vip_support_remove_user_via_cron';
+
+	/**
 	 * A flag to indicate reversion and then to prevent recursion.
 	 *
 	 * @var bool True if the role is being reverted
@@ -130,16 +135,17 @@ class User {
 	 * and sets some properties.
 	 */
 	public function __construct() {
-		add_action( 'admin_notices',      array( $this, 'action_admin_notices' ) );
-		add_action( 'set_user_role',      array( $this, 'action_set_user_role' ), 10, 3 );
-		add_action( 'user_register',      array( $this, 'action_user_register' ) );
-		add_action( 'parse_request',      array( $this, 'action_parse_request' ) );
-		add_action( 'personal_options',   array( $this, 'action_personal_options' ) );
-		add_action( 'load-user-edit.php', array( $this, 'action_load_user_edit' ) );
-		add_action( 'load-profile.php',   array( $this, 'action_load_profile' ) );
-		add_action( 'profile_update',     array( $this, 'action_profile_update' ) );
-		add_action( 'admin_head',         array( $this, 'action_admin_head' ) );
-		add_action( 'wp_login',           array( $this, 'action_wp_login' ), 10, 2 );
+		add_action( 'admin_notices',          array( $this, 'action_admin_notices' ) );
+		add_action( 'set_user_role',          array( $this, 'action_set_user_role' ), 10, 3 );
+		add_action( 'user_register',          array( $this, 'action_user_register' ) );
+		add_action( 'parse_request',          array( $this, 'action_parse_request' ) );
+		add_action( 'personal_options',       array( $this, 'action_personal_options' ) );
+		add_action( 'load-user-edit.php',     array( $this, 'action_load_user_edit' ) );
+		add_action( 'load-profile.php',       array( $this, 'action_load_profile' ) );
+		add_action( 'profile_update',         array( $this, 'action_profile_update' ) );
+		add_action( 'admin_head',             array( $this, 'action_admin_head' ) );
+		add_action( 'wp_login',               array( $this, 'action_wp_login' ), 10, 2 );
+		add_action( self::CRON_REMOVE_ACTION, array( $this, 'cron_remove_user' ) );
 
 		add_filter( 'wp_redirect',          array( $this, 'filter_wp_redirect' ) );
 		add_filter( 'removable_query_args', array( $this, 'filter_removable_query_args' ) );
@@ -551,6 +557,21 @@ class User {
 		}
 	}
 
+	/**
+	 * Remove a user via a cron event
+	 *
+	 * @param int $user_id User ID to remove.
+	 */
+	public function cron_remove_user( $user_id ) {
+		// TODO: purge _all_ existing support users older than 24 hours?
+
+		$removed = self::remove( $user_id, 'id' );
+
+		if ( is_wp_error( $removed ) ) {
+			error_log( $removed->get_error_message() );
+		}
+	}
+
 	// UTILITIES
 	// =========
 
@@ -850,6 +871,11 @@ class User {
 		if ( is_multisite() ) {
 			grant_super_admin( $user->ID );
 		}
+
+		// Remove the user after 24 hours.
+		wp_schedule_single_event( strtotime( '+24 hours' ), self::CRON_REMOVE_ACTION, array(
+			'user_id' => (int) $user->ID,
+		) );
 
 		return $user_id;
 	}
