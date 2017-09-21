@@ -73,17 +73,8 @@ class CLI extends WP_CLI_Command {
 
 		$success = User::remove( $user_email );
 
-		if ( is_wp_error( $success ) && $success['code'] === 'invalid-user' ) {
-			return \WP_CLI::warning( "No user exists with the email address {$user_email}, so they could not be deleted" );
-		}
-
-		if ( is_wp_error( $success ) && $success['code'] === 'not-support-user' ) {
-			return \WP_CLI::error( "The user with email {$user_email} is not in the active or the inactive VIP Support roles" );
-		}
-
 		if ( is_wp_error( $success ) ) {
-			// Unknown error - shouldn't happen, but just in case
-			return \WP_CLI::error( $success['message'] );
+			\WP_CLI::error( $success->get_error_message() );
 		}
 
 		\WP_CLI::success( "Deleted user with email {$user_email}" );
