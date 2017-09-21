@@ -45,7 +45,7 @@ class WPCOM_VIP_Support_CLI extends WP_CLI_Command {
 		$user_data['user_email']   = $user_email;
 		$user_data['display_name'] = $display_name;
 
-		$user_id = new_support_user( $user_data );
+		$user_id = WPCOM_VIP_Support_User::add( $user_data );
 
 		if ( is_wp_error( $user_id ) ) {
 			\WP_CLI::error( $user_id );
@@ -71,7 +71,7 @@ class WPCOM_VIP_Support_CLI extends WP_CLI_Command {
 
 		$user_email = $args[0];
 
-		$success = remove_support_user( $user_email );
+		$success = WPCOM_VIP_Support_User::remove( $user_email );
 
 		if ( is_wp_error( $success ) && $success['code'] === 'invalid-user' ) {
 			return \WP_CLI::warning( "No user exists with the email address {$user_email}, so they could not be deleted" );
