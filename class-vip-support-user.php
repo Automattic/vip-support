@@ -912,6 +912,8 @@ class User {
 
 	/**
 	 * Remove support users created more than a day ago
+	 *
+	 * @return array
 	 */
 	private function remove_stale_support_users() {
 		$support_users = get_users( array(
@@ -922,7 +924,7 @@ class User {
 		) );
 
 		if ( empty( $support_users ) ) {
-			return;
+			return array();
 		}
 
 		// Report the users removed.
@@ -936,26 +938,26 @@ class User {
 				continue;
 			}
 
-			$removed[ $user->user_email ] = self::remove( $user->ID, 'id' );
+			$removed[] = array(
+				'ID'      => $user->ID,
+				'email'   => $user->user_email,
+				'login'   => $user->user_login,
+				'removed' => self::remove( $user->ID, 'id' ),
+			);
 		}
 
-		error_log( "VIP Support user removals attempted: \n" . var_export( $removed, true ) );
-	}
-
-	/**
-	 *
-	 */
-	private function remove_stale_a12s_by_email() {
-		// TODO: use self::is_a8c_email
+		return $removed;
 	}
 
 	/**
 	 * Remove stale users via cron
 	 */
 	public static function do_cron_cleanup() {
-		// TODO: search for some meta in case someone changes role?
-		self::init()->remove_stale_support_users();
-		self::init()->remove_stale_a12s_by_email();
+		// TODO: search for some meta in case someone changes roles?
+
+		$stale = self::init()->remove_stale_support_users();
+
+		error_log( "VIP Support user removals attempted: \n" . var_export( compact( 'stale' ), true ) );
 	}
 }
 
