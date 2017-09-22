@@ -932,7 +932,7 @@ class User {
 		foreach ( $support_users as $user ) {
 			// Only remove users older than 24 hours.
 			$created = strtotime( $user->user_registered );
-			if ( $created <= $threshold ) {
+			if ( $created > $threshold ) {
 				continue;
 			}
 
