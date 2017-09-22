@@ -915,7 +915,7 @@ class User {
 	 *
 	 * @return array
 	 */
-	private function remove_stale_support_users() {
+	public static function remove_stale_support_users() {
 		$support_users = get_users( array(
 			'role__in' => array(
 				Role::VIP_SUPPORT_ROLE,
@@ -955,7 +955,7 @@ class User {
 	public static function do_cron_cleanup() {
 		// TODO: search for some meta in case someone changes roles?
 
-		$stale = self::init()->remove_stale_support_users();
+		$stale = self::remove_stale_support_users();
 
 		error_log( "VIP Support user removals attempted: \n" . var_export( compact( 'stale' ), true ) );
 	}
