@@ -864,11 +864,6 @@ class User {
 			grant_super_admin( $user->ID );
 		}
 
-		// Remove the user after 24 hours.
-		wp_schedule_single_event( strtotime( '+24 hours' ), self::CRON_REMOVE_ACTION, array(
-			'user_id' => (int) $user->ID,
-		) );
-
 		return $user_id;
 	}
 
