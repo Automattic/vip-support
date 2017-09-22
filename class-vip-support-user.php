@@ -147,6 +147,7 @@ class User {
 		add_action( 'wp_login',           array( $this, 'action_wp_login' ), 10, 2 );
 
 		// May be added by Cron Control, if used together.
+		// Ensure cleanup runs regardless.
 		if ( ! has_action( self::CRON_ACTION ) ) {
 			add_action( self::CRON_ACTION, array( __CLASS__, 'do_cron_cleanup' ) );
 
@@ -886,6 +887,14 @@ class User {
 			return new WP_Error( 'invalid-user', 'User does not exist' );
 		}
 
+		// Never remove the machine user.
+		if (
+			( defined( 'WPCOM_VIP_MACHINE_USER_LOGIN' ) && \WPCOM_VIP_MACHINE_USER_LOGIN === $user->user_login ) ||
+			( defined( 'WPCOM_VIP_MACHINE_USER_EMAIL' ) && \WPCOM_VIP_MACHINE_USER_LOGIN === $user->user_email )
+		) {
+			return new WP_Error( 'not-removing-machine-user', 'WPCOM VIP machine user cannot be removed!' );
+		}
+
 		// Check user has the active or inactive VIP Support role,
 		// and bail out if not
 		if ( ! self::user_has_vip_support_role( $user->ID, true )
@@ -907,12 +916,51 @@ class User {
 	}
 
 	/**
+	 * Remove support users created more than a day ago
+	 */
+	private function remove_stale_support_users() {
+		$support_users = get_users( array(
+			'role__in' => array(
+				Role::VIP_SUPPORT_ROLE,
+				Role::VIP_SUPPORT_INACTIVE_ROLE,
+			),
+		) );
+
+		if ( empty( $support_users ) ) {
+			return;
+		}
+
+		// Report the users removed.
+		$removed   = array();
+		$threshold = strtotime( '-24 hours' );
+
+		foreach ( $support_users as $user ) {
+			// Only remove users older than 24 hours.
+			$created = strtotime( $user->user_registered );
+			if ( $created <= $threshold ) {
+				continue;
+			}
+
+			$removed[ $user->user_email ] = self::remove( $user->ID, 'id' );
+		}
+
+		error_log( "VIP Support user removals attempted: \n" . var_export( $removed, true ) );
+	}
+
+	/**
+	 *
+	 */
+	private function remove_stale_a12s_by_email() {
+		// TODO: use self::is_a8c_email
+	}
+
+	/**
 	 * Remove stale users via cron
 	 */
 	public static function do_cron_cleanup() {
-		// TODO: search for users, delete them
 		// TODO: search for some meta in case someone changes role?
-		// TODO: search for a8c emails?
+		self::init()->remove_stale_support_users();
+		self::init()->remove_stale_a12s_by_email();
 	}
 }
 
