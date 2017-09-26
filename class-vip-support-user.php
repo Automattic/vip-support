@@ -151,7 +151,9 @@ class User {
 		if ( ! has_action( self::CRON_ACTION ) ) {
 			add_action( self::CRON_ACTION, array( __CLASS__, 'do_cron_cleanup' ) );
 
-			wp_schedule_event( time(), 'hourly', self::CRON_ACTION );
+			if ( ! wp_next_scheduled( self::CRON_ACTION ) ) {
+				wp_schedule_event( time(), 'hourly', self::CRON_ACTION );
+			}
 		}
 
 		add_filter( 'wp_redirect',          array( $this, 'filter_wp_redirect' ) );

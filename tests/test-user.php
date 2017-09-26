@@ -42,4 +42,11 @@ class VIPSupportUserTest extends WP_UnitTestCase {
 		}
 
 	}
+
+	/**
+	 * Test that cron callback is registered properly
+	 */
+	function test_cron_cleanup_has_callback() {
+		$this->assertEquals( 10, has_action( \Automattic\VIP\Support_User\User::CRON_ACTION ) );
+	}
 }
