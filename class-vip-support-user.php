@@ -938,11 +938,13 @@ class User {
 				continue;
 			}
 
+			$rm = self::remove( $user->ID, 'id' );
+
 			$removed[] = array(
 				'ID'      => $user->ID,
 				'email'   => $user->user_email,
 				'login'   => $user->user_login,
-				'removed' => self::remove( $user->ID, 'id' ),
+				'removed' => $rm,
 			);
 		}
 
