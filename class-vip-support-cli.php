@@ -12,7 +12,7 @@ use WP_CLI_Command;
  *
  * @package a8c\vip_support
  */
-class CLI extends WP_CLI_Command {
+class Command extends WP_CLI_Command {
 
 	/**
 	 * Creates a user in the VIP Support role, already verified,
@@ -51,7 +51,7 @@ class CLI extends WP_CLI_Command {
 			\WP_CLI::error( $user_id );
 		}
 
-		$msg = "Added user $user_id with login {$user_login} and password '{$user_pass}', they are verified as a VIP Support user and ready to go";
+		$msg = "Added user $user_id with login {$user_login}, they are verified as a VIP Support user and ready to go";
 		\WP_CLI::success( $msg );
 	}
 
@@ -120,4 +120,4 @@ class CLI extends WP_CLI_Command {
 
 }
 
-\WP_CLI::add_command( 'vipsupport', __NAMESPACE__ . '\CLI' );
+\WP_CLI::add_command( 'vipsupport', __NAMESPACE__ . '\Command' );
