@@ -1,6 +1,6 @@
 <?php
 /**
- *
+ * CLI commands
  */
 
 namespace Automattic\VIP\Support_User;

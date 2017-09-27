@@ -1,6 +1,6 @@
 <?php
 /**
- *
+ * Support User Role
  */
 
 namespace Automattic\VIP\Support_User;

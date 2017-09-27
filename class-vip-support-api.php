@@ -1,6 +1,6 @@
 <?php
 /**
- *
+ * REST endpoints
  */
 
 namespace Automattic\VIP\Support_User;
