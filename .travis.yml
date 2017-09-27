@@ -30,6 +30,8 @@ matrix:
     # PHPCS
     - php: 7.1
       env: WP_TRAVISCI=phpcs
+  allow_failures:
+    - env: WP_TRAVISCI=phpcs
 
 before_script:
   - phpenv config-rm xdebug.ini
