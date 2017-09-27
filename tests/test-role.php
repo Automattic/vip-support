@@ -1,4 +1,11 @@
 <?php
+/**
+ * Test our custom role
+ */
+
+namespace Automattic\VIP\Support_User\Tests;
+use Automattic\VIP\Support_User\Role;
+use WP_UnitTestCase;
 
 /**
  * @group vip_support_role
@@ -10,7 +17,7 @@ class VIPSupportRoleTest extends WP_UnitTestCase {
 		// Arrange
 		// Trigger the update method call on admin_init,
 		// this sets up the role
-		\Automattic\VIP\Support_User\Role::init()->action_admin_init();
+		Role::init()->action_admin_init();
 
 		// Act
 		$roles = get_editable_roles();
@@ -20,6 +27,6 @@ class VIPSupportRoleTest extends WP_UnitTestCase {
 		// To show up last, the VIP Support role will be
 		// the first index in the array
 		$first_role = array_shift( $role_names );
-		$this->assertTrue( \Automattic\VIP\Support_User\Role::VIP_SUPPORT_ROLE === $first_role );
+		$this->assertTrue( Role::VIP_SUPPORT_ROLE === $first_role );
 	}
 }

@@ -1,4 +1,11 @@
 <?php
+/**
+ * Test support user
+ */
+
+namespace Automattic\VIP\Support_User\Tests;
+use Automattic\VIP\Support_User\User;
+use WP_UnitTestCase;
 
 /**
  * @group vip_support_user
@@ -23,7 +30,7 @@ class VIPSupportUserTest extends WP_UnitTestCase {
 		);
 
 		foreach ( $a8c_emails as $a8c_email ) {
-			$this->assertTrue( \Automattic\VIP\Support_User\User::init()->is_a8c_email( $a8c_email ) );
+			$this->assertTrue( User::init()->is_a8c_email( $a8c_email ) );
 		}
 
 		$non_a8c_emails = array(
@@ -38,7 +45,7 @@ class VIPSupportUserTest extends WP_UnitTestCase {
 		);
 
 		foreach ( $non_a8c_emails as $non_a8c_email ) {
-			$this->assertFalse( \Automattic\VIP\Support_User\User::init()->is_a8c_email( $non_a8c_email ) );
+			$this->assertFalse( User::init()->is_a8c_email( $non_a8c_email ) );
 		}
 
 	}
@@ -47,6 +54,6 @@ class VIPSupportUserTest extends WP_UnitTestCase {
 	 * Test that cron callback is registered properly
 	 */
 	function test_cron_cleanup_has_callback() {
-		$this->assertEquals( 10, has_action( \Automattic\VIP\Support_User\User::CRON_ACTION ) );
+		$this->assertEquals( 10, has_action( User::CRON_ACTION ) );
 	}
 }
