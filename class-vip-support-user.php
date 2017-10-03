@@ -84,6 +84,11 @@ class User {
 	const GET_TRIGGER_RESEND_VERIFICATION = 'vip_trigger_resend';
 
 	/**
+	 * Cron action to purge support user after 24 hours.
+	 */
+	const CRON_ACTION = 'wpcom_vip_support_remove_user_via_cron';
+
+	/**
 	 * A flag to indicate reversion and then to prevent recursion.
 	 *
 	 * @var bool True if the role is being reverted
@@ -140,6 +145,16 @@ class User {
 		add_action( 'profile_update',     array( $this, 'action_profile_update' ) );
 		add_action( 'admin_head',         array( $this, 'action_admin_head' ) );
 		add_action( 'wp_login',           array( $this, 'action_wp_login' ), 10, 2 );
+
+		// May be added by Cron Control, if used together.
+		// Ensure cleanup runs regardless.
+		if ( ! has_action( self::CRON_ACTION ) ) {
+			add_action( self::CRON_ACTION, array( __CLASS__, 'do_cron_cleanup' ) );
+
+			if ( ! wp_next_scheduled( self::CRON_ACTION ) ) {
+				wp_schedule_event( time(), 'hourly', self::CRON_ACTION );
+			}
+		}
 
 		add_filter( 'wp_redirect',          array( $this, 'filter_wp_redirect' ) );
 		add_filter( 'removable_query_args', array( $this, 'filter_removable_query_args' ) );
@@ -869,6 +884,14 @@ class User {
 			return new WP_Error( 'invalid-user', 'User does not exist' );
 		}
 
+		// Never remove the machine user.
+		if (
+			( defined( 'WPCOM_VIP_MACHINE_USER_LOGIN' ) && \WPCOM_VIP_MACHINE_USER_LOGIN === $user->user_login ) ||
+			( defined( 'WPCOM_VIP_MACHINE_USER_EMAIL' ) && \WPCOM_VIP_MACHINE_USER_LOGIN === $user->user_email )
+		) {
+			return new WP_Error( 'not-removing-machine-user', 'WPCOM VIP machine user cannot be removed!' );
+		}
+
 		// Check user has the active or inactive VIP Support role,
 		// and bail out if not
 		if ( ! self::user_has_vip_support_role( $user->ID, true )
@@ -887,6 +910,58 @@ class User {
 		}
 
 		return wp_delete_user( $user->ID, null );
+	}
+
+	/**
+	 * Remove support users created more than a day ago
+	 *
+	 * @return array
+	 */
+	public static function remove_stale_support_users() {
+		$support_users = get_users( array(
+			'role__in' => array(
+				Role::VIP_SUPPORT_ROLE,
+				Role::VIP_SUPPORT_INACTIVE_ROLE,
+			),
+		) );
+
+		if ( empty( $support_users ) ) {
+			return array();
+		}
+
+		// Report the users removed.
+		$removed   = array();
+		$threshold = strtotime( '-24 hours' );
+
+		foreach ( $support_users as $user ) {
+			// Only remove users older than 24 hours.
+			$created = strtotime( $user->user_registered );
+			if ( $created > $threshold ) {
+				continue;
+			}
+
+			$rm = self::remove( $user->ID, 'id' );
+
+			$removed[] = array(
+				'ID'      => $user->ID,
+				'email'   => $user->user_email,
+				'login'   => $user->user_login,
+				'removed' => $rm,
+			);
+		}
+
+		return $removed;
+	}
+
+	/**
+	 * Remove stale users via cron
+	 */
+	public static function do_cron_cleanup() {
+		// TODO: search for some meta in case someone changes roles?
+
+		$stale = self::remove_stale_support_users();
+
+		error_log( "VIP Support user removals attempted: \n" . var_export( compact( 'stale' ), true ) );
 	}
 }
 
