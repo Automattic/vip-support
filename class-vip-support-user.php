@@ -527,7 +527,7 @@ class User {
 	 *
 	 * @return void
 	 */
-	public function action_wp_login( $user_login, WP_User $user ) {
+	public function action_wp_login( $user_login, $user ) {
 		if ( ! is_multisite() ) {
 			return;
 		}
