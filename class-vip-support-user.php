@@ -635,9 +635,9 @@ class User {
 	 * @return array Array of emails for current Mentees
 	 */
 	protected function get_mentees() {
-		$cached_emails = wpcom_vip_cache_get('vip_mentees');
+		$cached_emails = wpcom_vip_cache_get( 'vip_mentees' );
 
-		if ($cached_emails) {
+		if ( $cached_emails ) {
 		 return $cached_emails;
 		}
 
