@@ -651,13 +651,13 @@ class User {
 			)
 		);
 
-		$decoded_response = json_decode($response['body']);
+		$decoded_response = json_decode( $response[ 'body' ] );
 		$allowed_emails = [];
 
-		foreach ($decoded_response->users as $user) {
+		foreach ( $decoded_response->users as $user ) {
 			$allowed_emails[] = $user->email;
 		}
-		wpcom_vip_cache_set('vip_mentees', $allowed_emails, '', 86400);
+		wpcom_vip_cache_set( 'vip_mentees', $allowed_emails, '', 86400 );
 		return $allowed_emails;
 	}
 
@@ -684,7 +684,7 @@ class User {
 
 		// If email is not a8c, check if it belongs to a current mentee
 		$allowed_emails = $this->get_mentees();
-		if (in_array($email, $allowed_emails, true)) {
+		if ( in_array( $email, $allowed_emails, true ) ) {
 			return true;
 		}
 
