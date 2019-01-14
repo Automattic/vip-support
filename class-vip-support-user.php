@@ -647,7 +647,7 @@ class User {
 			'blocking' => true,
 			'headers' => array(
 				'Content-Type' => 'application/json; charset=utf-8',
-				'Authorization' => 'Basic ' . base64_encode( VIP_ZENDESK_EMAIL . '/token:' . VIP_ZENDESK_TOKEN ) );
+				'Authorization' => 'Basic ' . base64_encode( VIP_ZENDESK_EMAIL . '/token:' . VIP_ZENDESK_TOKEN ) ),
 			),
 		));
 
