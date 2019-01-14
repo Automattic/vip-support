@@ -630,6 +630,38 @@ class User {
 	}
 
 	/**
+	 * Get list of emails for current Mentees from Zendesk
+	 *
+	 * @return array Array of emails for current Mentees
+	 */
+	protected function get_mentees() {
+		$cached_emails = wpcom_vip_cache_get('vip_mentees');
+
+		if ($cached_emails) {
+		 return $cached_emails;
+		}
+
+		$url = VIP_ZENDESK_MENTEE_GROUP_URL;
+		$response = wp_remote_get( $url, array(
+			'method' => 'GET',
+			'blocking' => true,
+			'headers' => array(
+				'Content-Type' => 'application/json; charset=utf-8',
+				'Authorization' => 'Basic ' . base64_encode( VIP_ZENDESK_EMAIL . '/token:' . VIP_ZENDESK_TOKEN ) );
+			),
+		));
+
+		$decoded_response = json_decode($response['body']);
+		$allowed_emails = [];
+
+		foreach ($decoded_response->users as $user) {
+			$allowed_emails[] = $user->email;
+		}
+		wpcom_vip_cache_set('vip_mentees', $allowed_emails, '', 86400);
+		return $allowed_emails;
+	}
+
+	/**
 	 * Is a provided string an email address using an A8c domain.
 	 *
 	 * @param string $email An email address to check
@@ -649,6 +681,13 @@ class User {
 		if ( in_array( $domain, $a8c_domains ) ) {
 			return true;
 		}
+
+		// If email is not a8c, check if it belongs to a current mentee
+		$allowed_emails = $this->get_mentees();
+		if (in_array($email, $allowed_emails, true)) {
+			return true;
+		}
+
 		return false;
 	}
 
