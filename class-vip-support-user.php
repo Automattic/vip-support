@@ -648,7 +648,7 @@ class User {
 			'headers' => array(
 				'Content-Type' => 'application/json; charset=utf-8',
 				'Authorization' => 'Basic ' . base64_encode( VIP_ZENDESK_EMAIL . '/token:' . VIP_ZENDESK_TOKEN ) ),
-			),
+			)
 		);
 
 		$decoded_response = json_decode($response['body']);
