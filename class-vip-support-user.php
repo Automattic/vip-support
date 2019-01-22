@@ -947,7 +947,7 @@ class User {
 	public static function remove_stale_support_users() {
 		$users_with_meta = get_users( array(
 			'meta_key' => self::VIP_SUPPORT_USER_META_KEY,
-			'fields' => [ 'ID', 'user_registered' ],
+			'fields' => [ 'ID', 'user_registered', 'user_email', 'user_login'  ],
 		) );
 
 		// Continue querying by role for back-compat.
