@@ -945,27 +945,14 @@ class User {
 	 * @return array
 	 */
 	public static function remove_stale_support_users() {
-		$users_with_meta = get_users( array(
+		$support_users = get_users( array(
 			'meta_key' => self::VIP_SUPPORT_USER_META_KEY,
 			'fields' => [ 'ID', 'user_registered', 'user_email', 'user_login'  ],
 		) );
 
-		// Continue querying by role for back-compat.
-		// This is until old users without meta are cleared out.
-		$users_with_role = get_users( array(
-			'role__in' => array(
-				Role::VIP_SUPPORT_ROLE,
-				Role::VIP_SUPPORT_INACTIVE_ROLE,
-			),
-			'fields' => [ 'ID', 'user_registered', 'user_email', 'user_login' ],
-		) );
-
-		if ( empty( $users_with_meta )
-			&& empty( $users_with_role ) ) {
+		if ( empty( $support_users ) ) {
 			return array();
 		}
-
-		$users_to_remove = array_merge( (array) $users_with_meta, (array) $users_with_role );
 
 		$processed_ids = [];
 
@@ -975,7 +962,7 @@ class User {
 		// Remove support user after 8 hours (about 1 shift).
 		$threshold = strtotime( '-8 hours' );
 
-		foreach ( $users_to_remove as $user ) {
+		foreach ( $support_users as $user ) {
 			if ( in_array( $user->ID, $processed_ids, true ) ) {
 				continue;
 			}
