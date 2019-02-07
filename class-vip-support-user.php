@@ -99,6 +99,12 @@ class User {
 	const VIP_SUPPORT_EMAIL_ADDRESS = 'vip-support@automattic.com';
 
 	/**
+	 * Regex Pattern for `VIP_SUPPORT_EMAIL_ADDRESS` to match aliases like:
+	 * `vip-support+<username>@automattic.com`
+	 */
+	const VIP_SUPPORT_EMAIL_ADDRESS_PATTERN = '/vip-support\+(.*)@automattic\.com/i';
+
+	/**
 	 * A flag to indicate reversion and then to prevent recursion.
 	 *
 	 * @var bool True if the role is being reverted
@@ -731,8 +737,7 @@ class User {
 	 * @return bool true if the string is a VIP support email alias.
 	 */
 	public function is_vip_support_email_alias( $email ) {
-		$email_pattern = str_replace( [ '.', '@' ], [ '\.', '\+(.*)@' ], self::VIP_SUPPORT_EMAIL_ADDRESS );
-		return (bool) preg_match( "/{$email_pattern}/i", $email );
+		return (bool) preg_match( self::VIP_SUPPORT_EMAIL_ADDRESS_PATTERN, $email );
 	}
 
 	/**
