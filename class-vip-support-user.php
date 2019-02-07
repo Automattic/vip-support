@@ -149,6 +149,7 @@ class User {
 		add_action( 'load-profile.php',   array( $this, 'action_load_profile' ) );
 		add_action( 'profile_update',     array( $this, 'action_profile_update' ) );
 		add_action( 'admin_head',         array( $this, 'action_admin_head' ) );
+		add_action( 'admin_footer',       array( $this, 'action_admin_footer' ) );
 		add_action( 'wp_login',           array( $this, 'action_wp_login' ), 10, 2 );
 
 		// May be added by Cron Control, if used together.
@@ -163,6 +164,7 @@ class User {
 
 		add_filter( 'wp_redirect',          array( $this, 'filter_wp_redirect' ) );
 		add_filter( 'removable_query_args', array( $this, 'filter_removable_query_args' ) );
+		add_filter( 'get_role_list',        array( $this, 'filter_users_role_list' ), 10, 2 );
 
 		$this->reverting_role   = false;
 		$this->message_replace  = false;
@@ -195,6 +197,52 @@ class User {
 			</style>
 			<?php
 		}
+	}
+
+	/**
+	 * If a User has a VIP Support role, create a VIP Support badge to clearly brand as such.
+	 *
+	 * Because of `filter_users_role_list()`, all VIP Support users will receive the role
+	 * "VIP Support" in their role list.
+	 *
+	 * Since we've modified the roles list for VIP Users, instead of displaying it, staff
+	 * can view their role with `wp users list` instead.
+	 *
+	 * @param array $role_list roles for the user
+	 * @param object $user_object the WP_User object
+	 *
+	 * @return array $role_list
+	 */
+	public function action_admin_footer() {
+		if ( 'users' !== get_current_screen()->base ) {
+			return;
+		}
+		?>
+		<style type="text/css">
+			.vip-support-role-badge {
+				background: #151e25;
+				border-radius: 2px;
+				color: white;
+				display: inline-block;
+				padding: 5px 10px 5px 5px;
+			}
+			.vip-support-role-badge .dashicons {
+				padding-right: 5px;
+			}
+		</style>
+		<script type="text/javascript">
+			jQuery( document ).ready( function() {
+				jQuery( 'td.role' ).each( function( index, cell ) {
+					const roles = jQuery( cell ).text();
+					if ( ~roles.indexOf( 'VIP Support' ) ) {
+						const icon  = '<span class="dashicons dashicons-wordpress-alt"></span>';
+						const badge = '<span class="vip-support-role-badge">' + icon + 'VIP Support</span>';
+						jQuery( cell ).html( badge );
+					}
+				});
+			});
+		</script>
+		<?php
 	}
 
 	/**
@@ -521,6 +569,24 @@ class User {
 	public function filter_removable_query_args( $args ) {
 		$args[] = self::GET_TRIGGER_RESEND_VERIFICATION;
 		return $args;
+	}
+
+	/**
+	 * If a User has VIP Support flag in their user_meta, this ensures a role of "VIP Support"
+	 * is displayed in the Users list, regardless of the users current role.
+	 *
+	 * @param array $role_list roles for the user
+	 * @param object $user_object the WP_User object
+	 *
+	 * @return array $role_list
+	 */
+	public function filter_users_role_list( $role_list, $user_object ) {
+		if ( 'users' === get_current_screen()->base ) {
+			if ( $user_object->get( self::VIP_SUPPORT_USER_META_KEY ) && ! isset( $role_list['vip_support'] ) ) {
+				$role_list['vip_support'] = 'VIP Support'; // No translation as jQuery replaces this.
+			}
+		}
+		return $role_list;
 	}
 
 	/**
