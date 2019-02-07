@@ -61,6 +61,41 @@ class VIPSupportUserTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The values in `test_is_vip_support_email_alias()` pressume the value of
+	 * `User::VIP_SUPPORT_EMAIL_ADDRESS`. If that value changes the values in these
+	 * tests must also change as well. This test attempts to make that more clear.
+	 */
+	function test_vip_support_email_constant_for_tests() {
+		$this->assertEquals( 'vip-support@automattic.com', User::VIP_SUPPORT_EMAIL_ADDRESS );
+	}
+
+	function test_is_vip_support_email_alias() {
+
+		$support_email_aliases = array(
+			'vip-support+test@automattic.com',
+			'vip-support+some_username@automattic.com',
+		);
+
+		foreach ( $support_email_aliases as $support_email_alias ) {
+			$this->assertTrue( User::init()->is_vip_support_email_alias( $support_email_alias ) );
+		}
+
+		$non_support_email_aliases = array(
+			'someone@example.com',
+			'someone@automattic',
+			'someone@automattic.com',
+			'vip+test@example.com',
+			'vip-support+test@example.com',
+			'vip-support@example.com',
+		);
+
+		foreach ( $non_support_email_aliases as $non_support_email_alias ) {
+			$this->assertFalse( User::init()->is_vip_support_email_alias( $non_support_email_alias ) );
+		}
+
+	}
+
+	/**
 	 * Test that cron callback is registered properly
 	 */
 	function test_cron_cleanup_has_callback() {
