@@ -583,7 +583,7 @@ class User {
 	public function filter_users_role_list( $role_list, $user_object ) {
 		if ( 'users' === get_current_screen()->base ) {
 			if ( $user_object->get( self::VIP_SUPPORT_USER_META_KEY ) && ! isset( $role_list['vip_support'] ) ) {
-				$role_list['vip_support'] = esc_html__( 'VIP Support', 'vip_support' );
+				$role_list['vip_support'] = 'VIP Support'; // No translation as jQuery replaces this.
 			}
 		}
 		return $role_list;
