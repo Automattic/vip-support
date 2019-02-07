@@ -61,38 +61,49 @@ class VIPSupportUserTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * The values in `test_is_vip_support_email_alias()` pressume the value of
-	 * `User::VIP_SUPPORT_EMAIL_ADDRESS`. If that value changes the values in these
+	 * The values in `test_is_vip_support_email_alias_*()` pressumes the value of
+	 * `User::VIP_SUPPORT_EMAIL_ADDRESS`. If that constants value changes the values in these
 	 * tests must also change as well. This test attempts to make that more clear.
 	 */
 	function test_vip_support_email_constant_for_tests() {
 		$this->assertEquals( 'vip-support@automattic.com', User::VIP_SUPPORT_EMAIL_ADDRESS );
 	}
 
-	function test_is_vip_support_email_alias() {
+	/**
+	 * @dataProvider provider_valid_vip_support_email_aliases
+	 */
+	function test_is_vip_support_email_alias_valid( $valid_email_aliases  ) {
+		foreach ( $valid_email_aliases as $valid_email_alias ) {
+			$this->assertTrue( User::init()->is_vip_support_email_alias( $valid_email_alias ) );
+		}
+	}
 
-		$support_email_aliases = array(
+	function provider_valid_vip_support_email_aliases() {
+		return [ [ [
 			'vip-support+test@automattic.com',
 			'vip-support+some_username@automattic.com',
-		);
+			'vip-support+areallylongusernameusedhere123@automattic.com',
+		] ] ];
+	}
 
-		foreach ( $support_email_aliases as $support_email_alias ) {
-			$this->assertTrue( User::init()->is_vip_support_email_alias( $support_email_alias ) );
+	/**
+	 * @dataProvider provider_invalid_vip_support_email_aliases
+	 */
+	function test_is_vip_support_email_alias_invalid( $invalid_email_aliases ) {
+		foreach ( $invalid_email_aliases as $invalid_email_alias ) {
+			$this->assertFalse( User::init()->is_vip_support_email_alias( $invalid_email_alias ) );
 		}
+	}
 
-		$non_support_email_aliases = array(
+	function provider_invalid_vip_support_email_aliases() {
+		return [ [ [
 			'someone@example.com',
 			'someone@automattic',
 			'someone@automattic.com',
 			'vip+test@example.com',
 			'vip-support+test@example.com',
 			'vip-support@example.com',
-		);
-
-		foreach ( $non_support_email_aliases as $non_support_email_alias ) {
-			$this->assertFalse( User::init()->is_vip_support_email_alias( $non_support_email_alias ) );
-		}
-
+		] ] ];
 	}
 
 	/**
