@@ -104,13 +104,22 @@ class Role {
 	 * @return array An array of all the user's caps, with the required cap added
 	 */
 	public function filter_user_has_cap( array $user_caps, array $caps, array $args, WP_User $user ) {
-		if ( in_array( self::VIP_SUPPORT_ROLE, $user->roles ) && is_proxied_automattician() ) {
-			$caps = array_diff( $caps, self::BANNED_CAPABILITIES );
+		$is_support_user = User::has_vip_support_meta( $user->ID ); 
+		if ( $is_support_user ) {
+			// TODO: is this the right one?
+			if ( ! is_proxied_automattician() ) {
+				// TODO do_not_allow
+			}
 
-			foreach ( $caps as $cap ) {
-				$user_caps[$cap] = true;
+			if ( in_array( self::VIP_SUPPORT_ROLE, $user->roles ) ) {
+				$caps = array_diff( $caps, self::BANNED_CAPABILITIES );
+
+				foreach ( $caps as $cap ) {
+					$user_caps[$cap] = true;
+				}
 			}
 		}
+
 		return $user_caps;
 	}
 
