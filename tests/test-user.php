@@ -81,7 +81,7 @@ class VIPSupportUserTest extends WP_UnitTestCase {
 	 */
 	function test_vip_support_email_pattern_constant_for_tests() {
 		$this->assertEquals(
-			'/vip-support\+(.*)@automattic\.com/i',
+			'/vip-support\+[^@]+@automattic\.com/i',
 			User::VIP_SUPPORT_EMAIL_ADDRESS_PATTERN,
 			"`VIP_SUPPORT_EMAIL_ADDRESS_PATTERN` has changed. The data providers for the two `test_is_vip_support_email_alias_*()` tests, and this test need to be changed as well to reflect the new email address."
 		);
