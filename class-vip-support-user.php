@@ -102,7 +102,7 @@ class User {
 	 * Regex Pattern for `VIP_SUPPORT_EMAIL_ADDRESS` to match aliases like:
 	 * `vip-support+<username>@automattic.com`
 	 */
-	const VIP_SUPPORT_EMAIL_ADDRESS_PATTERN = '/vip-support\+(.*)@automattic\.com/i';
+	const VIP_SUPPORT_EMAIL_ADDRESS_PATTERN = '/vip-support\+[^@]+@automattic\.com/i';
 
 	/**
 	 * A flag to indicate reversion and then to prevent recursion.
