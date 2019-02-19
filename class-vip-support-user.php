@@ -105,6 +105,11 @@ class User {
 	const VIP_SUPPORT_EMAIL_ADDRESS_PATTERN = '/vip-support\+[^@]+@automattic\.com/i';
 
 	/**
+	 * The Gravatar URL for `VIP_SUPPORT_EMAIL_ADDRESS`.
+	 */
+	const VIP_SUPPORT_EMAIL_ADDRESS_GRAVATAR = 'https://secure.gravatar.com/avatar/c83fd21f1122c4d1d8677d6a7a1291d3';
+
+	/**
 	 * A flag to indicate reversion and then to prevent recursion.
 	 *
 	 * @var bool True if the role is being reverted
@@ -463,7 +468,7 @@ class User {
 
 		if ( isset( $user_email ) && $this->is_vip_support_email_alias( $user_email ) ) {
 			$email_hash = md5( self::VIP_SUPPORT_EMAIL_ADDRESS );
-			return sprintf( 'https://secure.gravatar.com/avatar/%s?s=%d&d=mm&r=g', $email_hash, $args['size'] );
+			return self::VIP_SUPPORT_EMAIL_ADDRESS_GRAVATAR . '?d=mm&r=g&s=' . $args['size'];
 		}
 
 		return $url;
