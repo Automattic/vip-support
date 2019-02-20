@@ -467,7 +467,6 @@ class User {
 		}
 
 		if ( isset( $user_email ) && $this->is_vip_support_email_alias( $user_email ) ) {
-			$email_hash = md5( self::VIP_SUPPORT_EMAIL_ADDRESS );
 			return self::VIP_SUPPORT_EMAIL_ADDRESS_GRAVATAR . '?d=mm&r=g&s=' . $args['size'];
 		}
 
