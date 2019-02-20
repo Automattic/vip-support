@@ -425,7 +425,7 @@ class User {
 	 * This helps simplify support email aliases in the users list so
 	 * they're not as lengthy and easier to understand at a glance.
 	 *
-	 * @param $email string The email address of a user.
+	 * @param string $email The email address of a user.
 	 *
 	 * @return string
 	 */
@@ -444,9 +444,9 @@ class User {
 	 * Instead of showing the mystery man, get the Gravatar for the
 	 * real `VIP_SUPPORT_EMAIL_ADDRESS` email address.
 	 *
-	 * @param $url         string The Gravatar url.
-	 * @param $id_or_email mixed  The users ID, email, or a WP_User, WP_Post, WP_Comment object.
-	 * @param $args        array  Arguments passed to get_avatar_url(), after processing.
+	 * @param string $url The Gravatar url.
+	 * @param mixed $id_or_email The users ID, email, or a WP_User object.
+	 * @param array $args Arguments passed to get_avatar_url(), after processing.
 	 *
 	 * @return string
 	 */
