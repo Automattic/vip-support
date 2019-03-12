@@ -430,7 +430,7 @@ class User {
 	 * @return string
 	 */
 	public function filter_vip_support_email_aliases( $email ) {
-		if ( is_admin() && $this->is_vip_support_email_alias( $email ) ) {
+		if ( is_admin() && $this->is_a8c_email( $email ) ) {
 			return self::VIP_SUPPORT_EMAIL_ADDRESS;
 		}
 		return $email;
@@ -466,7 +466,7 @@ class User {
 			$user_email = $id_or_email->user_email;
 		}
 
-		if ( isset( $user_email ) && $this->is_vip_support_email_alias( $user_email ) ) {
+		if ( isset( $user_email ) && $this->is_a8c_email( $user_email ) ) {
 			return self::VIP_SUPPORT_EMAIL_ADDRESS_GRAVATAR . '?d=mm&r=g&s=' . $args['size'];
 		}
 
