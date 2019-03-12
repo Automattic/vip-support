@@ -99,12 +99,6 @@ class User {
 	const VIP_SUPPORT_EMAIL_ADDRESS = 'vip-support@automattic.com';
 
 	/**
-	 * Regex Pattern for `VIP_SUPPORT_EMAIL_ADDRESS` to match aliases like:
-	 * `vip-support+<username>@automattic.com`
-	 */
-	const VIP_SUPPORT_EMAIL_ADDRESS_PATTERN = '/vip-support\+[^@]+@automattic\.com/i';
-
-	/**
 	 * The Gravatar URL for `VIP_SUPPORT_EMAIL_ADDRESS`.
 	 */
 	const VIP_SUPPORT_EMAIL_ADDRESS_GRAVATAR = 'https://secure.gravatar.com/avatar/c83fd21f1122c4d1d8677d6a7a1291d3';
@@ -728,20 +722,6 @@ class User {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Is the email provided a VIP Support email alias.
-	 *
-	 * VIP Support staff without a real a8c email addresses will receive
-	 * an email address like `vip-support+<username>@automattic.com`.
-	 *
-	 * @param string $email an email address to check.
-	 *
-	 * @return bool true if the string is a VIP support email alias.
-	 */
-	public function is_vip_support_email_alias( $email ) {
-		return (bool) preg_match( self::VIP_SUPPORT_EMAIL_ADDRESS_PATTERN, $email );
 	}
 
 	/**
