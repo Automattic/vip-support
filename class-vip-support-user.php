@@ -459,7 +459,9 @@ class User {
 		// Get the user's email address.
 		if ( is_numeric( $id_or_email ) ) {
 			$user       = get_user_by( 'id', $id_or_email );
-			$user_email = $user->user_email;
+			if ( false !== $user ) {
+				$user_email = $user->user_email;
+			}
 		} elseif ( is_string( $id_or_email ) ) {
 			$user_email = $id_or_email;
 		} elseif ( $id_or_email instanceof WP_User ) {
