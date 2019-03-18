@@ -948,10 +948,6 @@ class User {
 		$user = new WP_User( $user_id );
 		add_action( 'set_user_role', array( self::init(), 'action_set_user_role' ), 10, 3 );
 
-		// Seems polite to notify the admin that a support user got added to their site
-		// @TODO Tailor the notification email so it explains that this is a support user
-		wp_new_user_notification( $user_id, null, 'admin' );
-
 		self::init()->mark_user_email_verified( $user->ID, $user->user_email );
 		$user->set_role( Role::VIP_SUPPORT_ROLE );
 
