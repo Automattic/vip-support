@@ -64,7 +64,6 @@ class Role {
 	 * and sets some properties.
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'action_init' ) );
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
 		add_filter( 'editable_roles', array( $this, 'filter_editable_roles' ) );
 		add_filter( 'user_has_cap', array( $this, 'filter_user_has_cap' ), PHP_INT_MAX, 4 );
@@ -72,14 +71,6 @@ class Role {
 
 	// HOOKS
 	// =====
-
-	/**
-	 * Hooks the init action to add the role, covering the cases
-	 * where we should be using `wpcom_vip_add_role`.
-	 */
-	public function action_init() {
-		self::add_role();
-	}
 
 	/**
 	 * Hooks the admin_init action to run an update method.
