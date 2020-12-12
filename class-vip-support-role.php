@@ -76,7 +76,7 @@ class Role {
 	 * Hooks the admin_init action to run an update method.
 	 */
 	public function action_admin_init() {
-		$this->update();
+		$this->maybe_upgrade_version();
 	}
 
 	/**
@@ -139,22 +139,16 @@ class Role {
 
 	}
 
-	protected static function add_role() {
-		if ( function_exists( 'wpcom_vip_add_role' ) ) {
-			wpcom_vip_add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), array( 'read' => true ) );
-			wpcom_vip_add_role( self::VIP_SUPPORT_INACTIVE_ROLE, __( 'VIP Support (inactive)', 'a8c_vip_support' ), array( 'read' => true ) );
-		} else {
-			add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), array( 'read' => true ) );
-			add_role( self::VIP_SUPPORT_INACTIVE_ROLE, __( 'VIP Support (inactive)', 'a8c_vip_support' ), array( 'read' => true ) );
-		}
+	protected static function add_roles() {
+		add_role( self::VIP_SUPPORT_ROLE, __( 'VIP Support', 'a8c_vip_support' ), array( 'read' => true ) );
+		add_role( self::VIP_SUPPORT_INACTIVE_ROLE, __( 'VIP Support (inactive)', 'a8c_vip_support' ), array( 'read' => true ) );
 	}
 
 	/**
 	 * Checks the version option value against the version
 	 * property value, and runs update routines as appropriate.
-	 *
 	 */
-	protected function update() {
+	public function maybe_upgrade_version() {
 		$option_name = 'vipsupportrole_version';
 		$version = absint( get_option( $option_name, 0 ) );
 
@@ -162,8 +156,8 @@ class Role {
 			return;
 		}
 
-		if ( $version < 1 && function_exists( 'wpcom_vip_add_role' ) ) {
-			self::add_role();
+		if ( $version < 1 ) {
+			self::add_roles();
 			self::error_log( "VIP Support Role: Added VIP Support role " );
 		}
 
