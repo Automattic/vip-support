@@ -114,13 +114,20 @@ class Role {
 	 * @return array An array of WP role data
 	 */
 	public function filter_editable_roles( array $roles ) {
-		$vip_support_roles = array(
-			self::VIP_SUPPORT_INACTIVE_ROLE => $roles[self::VIP_SUPPORT_INACTIVE_ROLE],
-			self::VIP_SUPPORT_ROLE => $roles[self::VIP_SUPPORT_ROLE],
-		);
-		unset( $roles[self::VIP_SUPPORT_INACTIVE_ROLE] );
-		unset( $roles[self::VIP_SUPPORT_ROLE] );
+		$vip_support_roles = array();
+
+		if ( isset( $roles[ self::VIP_SUPPORT_INACTIVE_ROLE ] ) ) {
+			$vip_support_roles[ self::VIP_SUPPORT_INACTIVE_ROLE ] = $roles[ self::VIP_SUPPORT_INACTIVE_ROLE ];
+			unset( $roles[ self::VIP_SUPPORT_INACTIVE_ROLE ] );
+		}
+
+		if ( isset( $roles[ self::VIP_SUPPORT_ROLE ] ) ) {
+			$vip_support_roles[ self::VIP_SUPPORT_ROLE ] = $roles[ self::VIP_SUPPORT_ROLE ];
+			unset( $roles[ self::VIP_SUPPORT_ROLE ] );
+		}
+
 		$roles = array_merge( $vip_support_roles, $roles );
+
 		return $roles;
 	}
 
