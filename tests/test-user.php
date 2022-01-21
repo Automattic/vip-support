@@ -105,6 +105,8 @@ class VIPSupportUserTest extends WP_UnitTestCase {
 		] );
 
 		$instance = User::init();
+		
+		$instance->mark_user_email_verified( $user_id, 'admin@automattic.com' );
 
 		$this->assertTrue( $instance->is_verified_automattician( $user_id ) );
 	}
@@ -122,6 +124,8 @@ class VIPSupportUserTest extends WP_UnitTestCase {
 		] );
 
 		$instance = User::init();
+		
+		$instance->mark_user_email_verified( $user_id, 'foo@automattic.com' );
 
 		$this->assertFalse( $instance->is_verified_automattician( $user_id ) );
 	}
