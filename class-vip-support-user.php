@@ -748,7 +748,7 @@ class User {
 		}
 
 		// If the override _is_ present, then the user is only allowed if their email is in the array
-		return isset( VIP_SUPPORT_USER_ALLOWED_EMAILS[ $email ] );
+		return in_array( $email, VIP_SUPPORT_USER_ALLOWED_EMAILS, true );
 	}
 
 	/**
