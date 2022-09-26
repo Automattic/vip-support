@@ -1,4 +1,13 @@
 # WordPress.com VIP Support #
+
+> ⚠️ **This plugin is deprecated**
+>
+> It was merged into [the VIP Platform mu-plugins repo](https://github.com/Automattic/vip-go-mu-plugins/) and is kept updated there.
+> 
+> This repository will not receive any future updates.
+
+---
+
 **Contributors:** automattic  
 **Tags:** support, user  
 **Requires at least:** 4.8  
